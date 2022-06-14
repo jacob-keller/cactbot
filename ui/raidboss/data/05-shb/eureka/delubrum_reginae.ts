@@ -196,7 +196,7 @@ const triggerSet: TriggerSet<Data> = {
           tc: '左',
         },
         double: {
-          en: '${dir1} > ${dir2}',
+          en: '${dir1} x2 > ${dir2} x2',
           de: '${dir1} > ${dir2}',
           fr: '${dir1} > ${dir2}',
           ja: '${dir1} > ${dir2}',
