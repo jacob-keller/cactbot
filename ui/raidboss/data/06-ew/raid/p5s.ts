@@ -186,7 +186,7 @@ const triggerSet: TriggerSet<Data> = {
       id: 'P5S Ruby 3 Topaz Cluster',
       type: 'Ability',
       netRegex: { id: '7702', source: 'Proto-Carbuncle', capture: false },
-      durationSeconds: 12,
+      durationSeconds: 18,
       promise: async (data) => {
         // Log position data can be stale, call OverlayPlugin
         const result = await callOverlayHandler({
@@ -249,10 +249,14 @@ const triggerSet: TriggerSet<Data> = {
         });
       },
       outputStrings: {
-        NE: Outputs.dirNE,
-        SE: Outputs.dirSE,
-        SW: Outputs.dirSW,
-        NW: Outputs.dirNW,
+        // NE: Outputs.dirNE,
+        // SE: Outputs.dirSE,
+        // SW: Outputs.dirSW,
+        // NW: Outputs.dirNW,
+        NW: '1 (NW)',
+        NE: '2 (NE)',
+        SE: '3 (SE)',
+        SW: '4 (SW)',
         text: {
           en: '${dir1} -> ${dir2} -> ${dir3} -> ${dir4}',
           de: '${dir1} -> ${dir2} -> ${dir3} -> ${dir4}',
