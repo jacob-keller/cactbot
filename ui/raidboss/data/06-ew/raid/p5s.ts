@@ -271,8 +271,8 @@ const triggerSet: TriggerSet<Data> = {
       id: 'P5S Venom Squall/Surge',
       type: 'StartsUsing',
       netRegex: { id: '771[67]', source: 'Proto-Carbuncle' },
-      durationSeconds: 5,
-      alertText: (_data, matches, output) => {
+      durationSeconds: 10,
+      alarmText: (_data, matches, output) => {
         const spread = output.spread!();
         const healerGroups = output.healerGroups!();
         // Venom Squall
