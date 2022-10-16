@@ -129,7 +129,7 @@ const triggerSet: TriggerSet<Data> = {
       type: 'Ability',
       netRegex: { id: '786[68]', source: 'Hegemone', capture: false },
       delaySeconds: 2, // relevant mapeffect and trigger lines are consistently sent ~1.83s after the cast
-      durationSeconds: 10, // leave the output up while overlapping mechanics resolve
+      durationSeconds: 15, // leave the output up while overlapping mechanics resolve
       promise: async (data) => {
         data.combatantData = [];
         const ids = [];
@@ -142,7 +142,7 @@ const triggerSet: TriggerSet<Data> = {
           })).combatants;
         }
       },
-      infoText: (data, _matches, output) => {
+      alertText: (data, _matches, output) => {
         data.polyInstance++;
 
         if (data.tileTethers.length > 0 && data.combatantData.length === 0)
