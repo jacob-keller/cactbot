@@ -70,24 +70,12 @@ const triggerSet: TriggerSet<Data> = {
       },
     },
     {
-      id: 'SephirotUn Yesod Bait',
+      id: 'SephirotUn Yesod Bait w/pillar',
       regex: /Yesod/,
-      beforeSeconds: 6,
-      alertText: (data, _matches, output) => {
-        if (data.pillarActive)
-          return output.withPillar!();
-        return output.noPillar!();
-      },
+      beforeSeconds: 10,
+      condition: (data, _matches) => data.pillarActive,
+      alarmText: (_data, _matches, output) => output.withPillar!(),
       outputStrings: {
-        noPillar: {
-          en: 'Bait Yesod',
-          de: 'Yesod ködern',
-          fr: 'Attirez Yesod',
-          ja: 'イェソドクラッシュ誘導',
-          cn: '集合诱导基盘碎击',
-          ko: '예소드 붕괴 유도',
-          tc: '集合誘導基盤碎擊',
-        },
         withPillar: {
           en: 'Bait Yesod inside puddle',
           de: 'Yesod in die Fläche ködern',
@@ -100,9 +88,27 @@ const triggerSet: TriggerSet<Data> = {
       },
     },
     {
+      id: 'SephirotUn Yesod Bait wo/pillar',
+      regex: /Yesod/,
+      beforeSeconds: 6,
+      condition: (data, _matches) => !data.pillarActive,
+      alertText: (_data, _matches, output) => output.noPillar!(),
+      outputStrings: {
+        noPillar: {
+          en: 'Bait Yesod',
+          de: 'Yesod ködern',
+          fr: 'Attirez Yesod',
+          ja: 'イェソドクラッシュ誘導',
+          cn: '集合诱导基盘碎击',
+          tc: '集合誘導基盤碎擊',
+          ko: '예소드 붕괴 유도',
+        },
+      },
+    },
+    {
       id: 'SephirotUn Pillar Activate',
       regex: /Pillar of Mercy 1/,
-      beforeSeconds: 10,
+      beforeSeconds: 12,
       run: (data) => data.pillarActive = true,
     },
     {
