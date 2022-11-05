@@ -180,12 +180,8 @@ const triggerSet: TriggerSet<Data> = {
             ko: '줄 안달린 소: ${location}',
           },
           warOrientation: {
-            en: 'Bird with Minotaurs: ${location}',
-            de: 'Vögel mit Minotauren : ${location}',
-            fr: 'Oiseau sans Minotaure : ${location}',
-            ja: 'ミノと鳥: ${location}',
-            cn: '有鸟牛头人: ${location}',
-            ko: '새 + 미노타우로스: ${location}',
+            // en: 'Line Bull: ${bull} || Bird with Minotaurs: ${minotaurs}',
+            en: 'Line Bull: ${bull}',
           },
         };
 
@@ -260,17 +256,20 @@ const triggerSet: TriggerSet<Data> = {
         }
 
         if (data.fruitCount === 10) {
-          // Check where minotaurs are to determine middle bird
-          // Forbidden Fruit 10 uses last two minotaurs
+          // Check where minotaurs are to determine middle bird, check where
+          // the bull is.
+          // Forbidden Fruit 10 uses last two minotaurs, and last bull.
           if (
             data.unhatchedEggs === undefined || data.unhatchedEggs[4] === undefined ||
-            data.unhatchedEggs[5] === undefined
+            data.unhatchedEggs[5] === undefined || data.unhatchedEggs[12] === undefined
           ) {
             console.error(`Forbidden Fruit ${data.fruitCount}: Missing egg data.`);
             return;
           }
           const minotaurDir1 = matchedPositionTo8Dir(data.unhatchedEggs[4]);
           const minotaurDir2 = matchedPositionTo8Dir(data.unhatchedEggs[5]);
+          const bullDir = matchedPositionTo8Dir(data.unhatchedEggs[12]);
+          const bullPlatform = dirToPlatform[bullDir];
 
           // Return if received bad data
           const validDirs = [1, 4, 6];
@@ -289,9 +288,15 @@ const triggerSet: TriggerSet<Data> = {
             10: 'south', // SE + SW
           };
 
-          const platform = bridgeDirsToPlatform[minotaurDir1 + minotaurDir2];
-          if (platform !== undefined)
-            return { infoText: output.warOrientation!({ location: output[platform]!() }) };
+          const minotaurPlatform = bridgeDirsToPlatform[minotaurDir1 + minotaurDir2];
+
+          if (minotaurPlatform !== undefined && bullPlatform !== undefined)
+            return {
+              infoText: output.warOrientation!({
+                minotaurs: output[minotaurPlatform]!(),
+                bull: output[bullPlatform]!(),
+              }),
+            };
         }
 
         if (data.fruitCount > 6 && data.fruitCount < 10) {
