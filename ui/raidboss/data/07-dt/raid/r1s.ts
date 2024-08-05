@@ -475,6 +475,18 @@ const triggerSet: TriggerSet<Data> = {
       },
     },
     {
+      // Primarily a reminder for reprisal usage since the baits hurt
+      id: 'R1S Quadruple Crossing',
+      type: 'StartsUsing',
+      netRegex: { id: '943C', source: 'Black Cat', capture: false },
+      infoText: (_data, _matches, output) => output.proximity!(),
+      outputStrings: {
+        proximity: {
+          en: 'Proximity baits',
+        },
+      },
+    },
+    {
       id: 'R1S Leaping Quadruple Crossing',
       type: 'StartsUsing',
       netRegex: { id: ['9457', '982F'], source: 'Black Cat', capture: true },
