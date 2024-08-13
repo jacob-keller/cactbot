@@ -12,6 +12,7 @@ export interface Data extends RaidbossData {
   beatTwoOneStart?: boolean;
   beatTwoSpreadCollect: string[];
   tankLaserCollect: string[];
+  beatThreePoisonPopped: string[];
 }
 
 const headMarkerData = {
@@ -35,6 +36,7 @@ const triggerSet: TriggerSet<Data> = {
     partnersSpreadCounter: 0,
     beatTwoSpreadCollect: [],
     tankLaserCollect: [],
+    beatThreePoisonPopped: [],
   }),
   triggers: [
     {
@@ -300,6 +302,29 @@ const triggerSet: TriggerSet<Data> = {
           ko: '쉐어',
         },
         unknown: Outputs.unknown,
+      },
+    },
+    {
+      id: 'R2S Poison n Pop Towers Collect',
+      type: 'LosesEffect',
+      netRegex: { effectId: 'F5E', capture: true },
+      run: (data, matches) => data.beatThreePoisonPopped.push(matches.target),
+    },
+    {
+      id: 'R2S Poison n Pop Towers',
+      type: 'LosesEffect',
+      netRegex: { effectId: 'F5E', capture: false },
+      delaySeconds: 0.1,
+      suppressSeconds: 5,
+      alertText: (data, _matches, output) => {
+        if (data.beatThreePoisonPopped.includes(data.me))
+          return;
+
+        return output.towers!();
+      },
+      run: (data) => data.beatThreePoisonPopped = [],
+      outputStrings: {
+        towers: Outputs.getTowers,
       },
     },
     {
