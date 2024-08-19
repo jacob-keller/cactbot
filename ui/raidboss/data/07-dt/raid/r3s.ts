@@ -176,7 +176,7 @@ const triggerSet: TriggerSet<Data> = {
       id: 'R3S Octuple Lariat Out',
       type: 'StartsUsing',
       netRegex: { id: '93D8', source: 'Brute Bomber', capture: false },
-      infoText: (_data, _matches, output) => output.text!(),
+      alertText: (_data, _matches, output) => output.text!(),
       outputStrings: {
         text: {
           en: 'Out + Spread',
@@ -192,7 +192,7 @@ const triggerSet: TriggerSet<Data> = {
       id: 'R3S Octuple Lariat In',
       type: 'StartsUsing',
       netRegex: { id: '93D9', source: 'Brute Bomber', capture: false },
-      infoText: (_data, _matches, output) => output.text!(),
+      alertText: (_data, _matches, output) => output.text!(),
       outputStrings: {
         text: {
           en: 'In + Spread',
