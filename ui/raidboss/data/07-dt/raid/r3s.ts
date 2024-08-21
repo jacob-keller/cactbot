@@ -19,6 +19,7 @@ export interface Data extends RaidbossData {
   phaseTracker: number;
   tagTeamCloneTethered?: number;
   tagTeamClones: TagTeamClone[];
+  brutalImpactCount: number;
 }
 
 // TODO: <foo>boom Special delayed in/out triggers?
@@ -152,6 +153,7 @@ const triggerSet: TriggerSet<Data> = {
   initData: () => ({
     phaseTracker: 0,
     tagTeamClones: [],
+    brutalImpactCount: 0,
   }),
   triggers: [
     {
@@ -170,7 +172,20 @@ const triggerSet: TriggerSet<Data> = {
       id: 'R3S Brutal Impact',
       type: 'StartsUsing',
       netRegex: { id: '9425', source: 'Brute Bomber', capture: false },
-      response: Responses.aoe(),
+      response: (data, _matches, output) => {
+        // cactbot-builtin-response
+        output.responseOutputStrings = {
+          aoe: Outputs.aoe,
+          reprisal: {
+            en: 'aoe (reprisal)',
+          },
+        };
+        if (data.brutalImpactCount % 2 === 1)
+          return { infoText: output.aoe!() };
+
+        return { alertText: output.reprisal!() };
+      },
+      run: (data) => data.brutalImpactCount++,
     },
     {
       id: 'R3S Octuple Lariat Out',
