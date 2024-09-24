@@ -799,6 +799,33 @@ const triggerSet: TriggerSet<Data> = {
       },
     },
     {
+      id: 'AMR Shishio Rokujo Revel',
+      type: 'StartsUsing',
+      // Its unclear if we need to check 83FE, since 83FC always comes first
+      // and we can call based on the smokeater count.
+      netRegex: { id: ['83FC', '83FE'], source: 'Shishio', capture: false },
+      suppressSeconds: 10,
+      alertText: (data, _matches, output) => {
+        if (data.smokeaterCount === 1)
+          return output.oneLine!();
+        else if (data.smokeaterCount === 2)
+          return output.twoLines!();
+        else if (data.smokeaterCount === 3)
+          return output.threeLines!();
+      },
+      outputStrings: {
+        oneLine: {
+          en: 'First Line, Opposite 1 Cloud => Rotate with Explosions',
+        },
+        twoLines: {
+          en: 'First Line, Opposite 1 Cloud => Rotate with Explosions',
+        },
+        threeLines: {
+          en: 'Opposite Cloud Not in Line => Rotate with Explosion',
+        },
+      },
+    },
+    {
       id: 'AMR Shishio Splitting Cry',
       type: 'StartsUsing',
       netRegex: { id: '841B', source: 'Shishio' },
@@ -1198,6 +1225,18 @@ const triggerSet: TriggerSet<Data> = {
         },
         ...basicStackSpreadOutputStrings,
         unknownMech: Outputs.unknown,
+      },
+    },
+    {
+      id: 'AMR Shishio Lightning Bolt',
+      type: 'StartsUsing',
+      netRegex: { id: '8403', source: 'Shishio', capture: false },
+      suppressSeconds: 10,
+      alertText: (_data, _matches, output) => output.text!(),
+      outputStrings: {
+        text: {
+          en: 'Dodge Lines',
+        },
       },
     },
     {
