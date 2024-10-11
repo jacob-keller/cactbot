@@ -27,6 +27,13 @@ const directionOutputStrings = {
   unknown: Outputs.unknown,
   goLeft: Outputs.left,
   goRight: Outputs.right,
+  stay: {
+    en: 'Stay',
+  },
+  num2: Outputs.num2,
+  num3: Outputs.num3,
+  num4: Outputs.num4,
+  num5: Outputs.num5,
   separator: {
     en: ' => ',
     de: ' => ',
@@ -34,6 +41,17 @@ const directionOutputStrings = {
     ja: ' => ',
     cn: ' => ',
     ko: ' => ',
+  },
+  intercardStay: {
+    en: '${dir} => Stay',
+  },
+  numHits: {
+    en: '${dir} x${num}',
+    de: '${dir} x${num}',
+    fr: '${dir} x${num}',
+    ja: '${dir} x${num}',
+    cn: '${dir} x${num}',
+    ko: '${dir} x${num}',
   },
   combo: {
     en: '${dirs}',
@@ -92,6 +110,23 @@ const getCleaveDirs = (
     const offset = entry.dir === 'left' ? 1 : -1;
     return Directions.outputFromCardinalNum((actorFacing + 4 + offset) % 4);
   });
+
+  if (dirs.length === 1)
+    return dirs;
+
+  // Check if all directions lead to the same intercard. If so, there's no
+  // reason to call a sequence. We don't need to check the cardinals,
+  // because it will only be true either when there is exactly one element,
+  // or in the extremely unlikely event that every clone pointed in the same
+  // direction.
+  if (dirs.every((dir) => ['dirN', 'dirE'].includes(dir)))
+    return ['dirNE'];
+  if (dirs.every((dir) => ['dirS', 'dirE'].includes(dir)))
+    return ['dirSE'];
+  if (dirs.every((dir) => ['dirS', 'dirW'].includes(dir)))
+    return ['dirSW'];
+  if (dirs.every((dir) => ['dirN', 'dirW'].includes(dir)))
+    return ['dirNW'];
 
   return dirs;
 };
@@ -211,6 +246,19 @@ const triggerSet: TriggerSet<Data> = {
         const dirs = getCleaveDirs(data.actors, data.storedCleaves);
         const mappedDirs = dirs.map((dir) => output[dir]!());
 
+        const cleaves: number = data.storedCleaves.length;
+        if (mappedDirs.length === 1 && cleaves > 1) {
+          const cleaveNums: { [key: number]: string } = {
+            2: output.num2!(),
+            3: output.num3!(),
+            4: output.num4!(),
+            5: output.num5!(),
+          };
+
+          if (cleaves in cleaveNums)
+            return output.numHits!({ dir: mappedDirs[0], num: cleaveNums[cleaves] });
+        }
+
         return output.combo!({ dirs: mappedDirs.join(output.separator!()) });
       },
       run: (data) => {
@@ -288,6 +336,12 @@ const triggerSet: TriggerSet<Data> = {
           : data.storedCleaves;
 
         const dirs: DirectionOutput8[] = getCleaveDirs(data.actors, remainingHits);
+
+        if (dirs.length === 1) {
+          const dir = dirs[0]!;
+          const mappedDir = output[dir]!();
+          return output.intercardStay!({ dir: mappedDir });
+        }
 
         const mappedDirs = dirs.map((dir) => output[dir]!());
 
