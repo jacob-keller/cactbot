@@ -20,6 +20,7 @@ export interface Data extends RaidbossData {
   tagTeamCloneTethered?: number;
   tagTeamClones: TagTeamClone[];
   brutalImpactCount: number;
+  fuseFieldCount: number;
 }
 
 // TODO: <foo>boom Special delayed in/out triggers?
@@ -154,6 +155,7 @@ const triggerSet: TriggerSet<Data> = {
     phaseTracker: 0,
     tagTeamClones: [],
     brutalImpactCount: 0,
+    fuseFieldCount: 0,
   }),
   triggers: [
     {
@@ -387,7 +389,10 @@ const triggerSet: TriggerSet<Data> = {
       type: 'GainsEffect',
       netRegex: { effectId: 'FB4' },
       condition: Conditions.targetIsYou(),
-      alertText: (_data, matches, output) => {
+      alertText: (data, matches, output) => {
+        // Start count at 1
+        data.fuseFieldCount = 1;
+
         if (parseFloat(matches.duration) < 30)
           return output.short!();
         return output.long!();
@@ -408,6 +413,62 @@ const triggerSet: TriggerSet<Data> = {
           ja: '長い導火線',
           cn: '长引线点名',
           ko: '긴 도화선',
+        },
+      },
+    },
+    {
+      id: 'R3S Fuse Field Magic Vulnerability Fade',
+      type: 'LosesEffect',
+      netRegex: { effectId: 'B7D', capture: false },
+      suppressSeconds: 0.5,
+      infoText: (data, _matches, output) => {
+        if (data.fuseFieldCount < 1)
+          return;
+
+        data.fuseFieldCount++;
+
+        switch (data.fuseFieldCount) {
+          case 2:
+            return output.second!();
+          case 3:
+            return output.third!();
+          case 4:
+            return output.fourth!();
+          case 5:
+            return output.fifth!();
+          case 6:
+            return output.sixth!();
+          case 7:
+            return output.seventh!();
+          case 8:
+            return output.eighth!();
+          default:
+            // We can stop counting after 8
+            data.fuseFieldCount = 0;
+            return;
+        }
+      },
+      outputStrings: {
+        second: {
+          en: 'Second Short',
+        },
+        third: {
+          en: 'Third Short',
+        },
+        fourth: {
+          en: 'Fourth Short',
+        },
+        fifth: {
+          en: 'First Long',
+        },
+        sixth: {
+          en: 'Second Long',
+        },
+        seventh: {
+          en: 'Third Long',
+        },
+        eighth: {
+          en: 'Final Long',
         },
       },
     },
