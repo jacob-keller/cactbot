@@ -1711,7 +1711,11 @@ const triggerSet: TriggerSet<Data> = {
         if (safeFirst === undefined)
           return output.bait!();
 
-        return output.combo!({ bait: output.bait!(), dir: output[safeFirst]!() });
+        return output.combo!({
+          bait: output.bait!(),
+          dir: output[safeFirst]!(),
+          dir2: output[data.secondTwilightCleaveSafe]!(),
+        });
       },
       run: (data) => {
         if (data.replicaCleaveCount !== 4)
@@ -1724,12 +1728,12 @@ const triggerSet: TriggerSet<Data> = {
         ...Directions.outputStringsIntercardDir,
         bait: Outputs.baitPuddles,
         combo: {
-          en: '${bait} => ${dir}',
-          de: '${bait} => ${dir}',
-          fr: '${bait} => ${dir}',
-          ja: '${bait} => ${dir}',
-          cn: '${bait} => ${dir}',
-          ko: '${bait} => ${dir}',
+          en: '${bait} => ${dir} => ${dir2}',
+          de: '${bait} => ${dir} => ${dir2}',
+          fr: '${bait} => ${dir} => ${dir2}',
+          ja: '${bait} => ${dir} => ${dir2}',
+          cn: '${bait} => ${dir} => ${dir2}',
+          ko: '${bait} => ${dir} => ${dir2}',
         },
       },
     },
