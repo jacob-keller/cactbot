@@ -12,6 +12,7 @@ export interface Data extends RaidbossData {
   arcaneLaneSafe: ArcaneLane[];
   avalancheSafe?: 'frontRight' | 'backLeft';
   iceSphereAttackCount: number;
+  mountainFireSoak: boolean | undefined;
 }
 
 // Vali uses uncasted abilities to move between left, middle, and right.
@@ -103,6 +104,7 @@ const triggerSet: TriggerSet<Data> = {
       arcaneLaneSafe: [...arcaneLanesConst],
       phase: 'start',
       iceSphereAttackCount: 0,
+      mountainFireSoak: undefined,
     };
   },
   triggers: [
@@ -223,11 +225,9 @@ const triggerSet: TriggerSet<Data> = {
       type: 'Ability',
       netRegex: { id: '900C', source: 'Valigarmanda', capture: false },
       condition: (data) => data.role === 'tank',
-      // There's ~5.5s between the end of the cast and damage applied from first tower soak.
-      // The tower soak/damage happens six times; use a long duration to keep this reminder up.
-      durationSeconds: 30.5,
-      // use infoText to distinguish from wedge direction alert calls at the same time
+      durationSeconds: 6,
       infoText: (_data, _matches, output) => output.soakSwap!(),
+      run: (data) => data.mountainFireSoak = undefined,
       outputStrings: {
         soakSwap: {
           en: 'Tank Tower (soak/swap)',
@@ -238,6 +238,37 @@ const triggerSet: TriggerSet<Data> = {
           ko: '탱커 기둥 (밟기/교대)',
         },
       },
+    },
+    {
+      id: 'Valigarmanda Ex Mountain Fire Tank Swap',
+      type: 'StartsUsing',
+      netRegex: { id: '9019', source: 'Valigarmanda', capture: false },
+      condition: (data) => data.role === 'tank' && data.mountainFireSoak === true,
+      alarmText: (_data, _matches, output) => output.soakSwap!(),
+      outputStrings: {
+        soakSwap: {
+          en: 'Tank Tower (soak/swap)',
+          de: 'Tank Türme (nehmen/wechseln)',
+          fr: 'Tank : Tour (encaisser/swap)',
+          ja: 'タンク塔 (踏む/スイッチ)',
+          cn: '双T轮换踩塔',
+          ko: '탱커 기둥 (밟기/교대)',
+        },
+      },
+    },
+    {
+      id: 'Valigarmanda Ex Mountain Fire Soak Setup',
+      type: 'Ability',
+      netRegex: { id: '9019', source: 'Valigarmanda' },
+      condition: Conditions.targetIsYou(),
+      run: (data) => data.mountainFireSoak = false,
+    },
+    {
+      id: 'Valigarmanda Ex Mountain Fire Vuln',
+      type: 'Ability',
+      netRegex: { id: '9019', source: 'Valigarmanda' },
+      condition: Conditions.targetIsNotYou(),
+      run: (data) => data.mountainFireSoak = true,
     },
     {
       id: 'Valigarmanda Ex Mountain Fire First Wedge',
@@ -254,6 +285,7 @@ const triggerSet: TriggerSet<Data> = {
       id: 'Valigarmanda Ex Mountain Fire Subsequent Wedge',
       type: 'Ability',
       netRegex: { id: mtFireIds, source: 'Valigarmanda' },
+      condition: (data) => data.role !== 'tank' || data.mountainFireSoak === false,
       alertText: (_data, matches, output) => {
         const safe = mtFireIdToSafeMap[matches.id];
         if (safe === undefined)
