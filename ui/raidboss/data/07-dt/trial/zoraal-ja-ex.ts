@@ -860,59 +860,28 @@ const triggerSet: TriggerSet<Data> = {
 
         return output.combo!({ fireWindCombo: fireWindSafeOutput, tile: tileOutput });
       },
-      run: (data) => {
-        data.forgedTrackSafeTiles = [];
-        data.unsafeTiles = [];
-        delete data.fireWindSetup;
-        delete data.lineCleaveSetup;
-        delete data.fireWindEffect;
-        delete data.fireWindSafeDir;
-      },
       outputStrings: {
         leanLeft: {
-          en: '<= Inside Left (Facing Boss)',
-          de: '<= Innen links (Boss anschauen)',
-          fr: '<= Gauche intérieur (en regardant le boss)',
-          ja: '<= 左内側 (ボス正面)',
-          cn: '<= 左内侧 (面向BOSS)',
-          ko: '<= 안 왼쪽 (보스를 바라보며)',
+          en: '<= Inside Left (Facing Center)',
         },
         leanRight: {
-          en: 'Inside Right (Facing Boss) =>',
-          de: 'Innen Rechts (Boss anschauen) =>',
-          fr: 'Droite intérieur (en regardant le boss) =>',
-          ja: '右内側 (ボス正面) =>',
-          cn: '右内侧 (面向BOSS) =>',
-          ko: '안 오른쪽 (보스를 바라보며) =>',
+          en: 'Inside Right (Facing Center) =>',
         },
         corner: {
-          en: 'Corners Safe',
-          de: 'Ecken sicher',
-          fr: 'Coins sûrs',
-          ja: '隅が安地',
-          cn: '四角安全',
-          ko: '구석 안전',
+          en: 'Corners',
         },
         northwest: Outputs.northwest,
         northeast: Outputs.northeast,
         southeast: Outputs.southeast,
         southwest: Outputs.southwest,
         fire: {
-          en: 'Go Far',
-          de: 'Weit gehen',
-          fr: 'Éloignez-vous',
-          ja: '離れて',
-          cn: '远离',
-          ko: '멀어지기',
+          en: 'Fire',
         },
-        wind: Outputs.knockback,
+        wind: {
+          en: 'Wind',
+        },
         fireWindSafe: {
-          en: '${fireWind} ${safeDir}',
-          de: '${fireWind} ${safeDir}',
-          fr: '${fireWind} ${safeDir}',
-          ja: '${fireWind} ${safeDir}',
-          cn: '${fireWind}, ${safeDir}',
-          ko: '${fireWind} ${safeDir}',
+          en: '${safeDir} ${fireWind}',
         },
         combo: {
           en: '${fireWindCombo} + ${tile}',
@@ -930,6 +899,29 @@ const triggerSet: TriggerSet<Data> = {
           cn: '躲开剑',
           ko: '칼 피하기',
         },
+      },
+    },
+    {
+      id: 'Zoraal Ja Ex Forged Track Cleanup + Wind Knockback',
+      type: 'StartsUsing',
+      netRegex: { id: '935F', source: 'Zoraal Ja', capture: false },
+      condition: (data) => data.phase === 'swords',
+      delaySeconds: 7,
+      durationSeconds: 5,
+      alarmText: (data, _matches, output) => {
+        if (data.fireWindEffect === 'wind')
+          return output.knockback!();
+      },
+      run: (data) => {
+        data.forgedTrackSafeTiles = [];
+        data.unsafeTiles = [];
+        delete data.fireWindSetup;
+        delete data.lineCleaveSetup;
+        delete data.fireWindEffect;
+        delete data.fireWindSafeDir;
+      },
+      outputStrings: {
+        knockback: Outputs.knockback,
       },
     },
     {
