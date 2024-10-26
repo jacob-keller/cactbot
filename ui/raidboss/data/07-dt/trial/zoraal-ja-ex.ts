@@ -767,13 +767,10 @@ const triggerSet: TriggerSet<Data> = {
       type: 'StartsUsing',
       netRegex: { id: '939C', source: 'Fang' },
       condition: (data, matches) => data.phase === 'swords' && parseFloat(matches.y) > 115, // line cleave swords
-      delaySeconds: 0.4, // let Fire/Wind Collect run first
       run: (data, matches) => {
-        if (data.lineCleaveSetup === undefined || data.forgedTrackSafeTiles.length !== 4) {
+        if (data.lineCleaveSetup === undefined) {
           console.error(
-            `Could not determine lineCleaveSetup (${
-              data.lineCleaveSetup ?? 'undef'
-            }) or valid safe tiles (${data.forgedTrackSafeTiles.join(',')}).`,
+            `Could not determine lineCleaveSetup (${data.lineCleaveSetup ?? 'undef'})`,
           );
           return;
         }
@@ -815,8 +812,8 @@ const triggerSet: TriggerSet<Data> = {
       type: 'StartsUsing',
       netRegex: { id: '935F', source: 'Zoraal Ja', capture: false },
       condition: (data) => data.phase === 'swords',
-      delaySeconds: 0.6, // let the collectors finish
-      durationSeconds: 9,
+      delaySeconds: 0.2, // let the collectors finish
+      durationSeconds: 9.5,
       alertText: (data, _matches, output) => {
         if (data.fireWindEffect === undefined)
           return output.unknown!();
@@ -906,7 +903,7 @@ const triggerSet: TriggerSet<Data> = {
       type: 'StartsUsing',
       netRegex: { id: '935F', source: 'Zoraal Ja', capture: false },
       condition: (data) => data.phase === 'swords',
-      delaySeconds: 7,
+      delaySeconds: 9,
       durationSeconds: 5,
       alarmText: (data, _matches, output) => {
         if (data.fireWindEffect === 'wind')
