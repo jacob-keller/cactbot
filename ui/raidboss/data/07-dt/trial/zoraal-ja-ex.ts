@@ -460,8 +460,10 @@ const triggerSet: TriggerSet<Data> = {
     {
       id: 'Zoraal Ja Ex Chasm Of Vollok Sword Collect',
       type: 'StartsUsing',
-      netRegex: { id: '9399', source: 'Fang' },
-      run: (data, matches) => {
+      netRegex: { id: '9399', source: 'Fang', capture: true },
+      condition: (data) => data.phase === 'swords',
+      durationSeconds: (data) => data.seenHalfCircuit ? 6 : 3,
+      alertText: (data, matches, output) => {
         const mirrorAdjust = 21.21; // sqrt(5^2 + 5^2) * 3
         let swordX = parseFloat(matches.x);
         let swordY = parseFloat(matches.y);
@@ -483,6 +485,86 @@ const triggerSet: TriggerSet<Data> = {
         if (adjustedTile === 'unknown')
           return;
         data.unsafeTiles.push(adjustedTile);
+
+        // Output nothing until we have 8 tiles.
+        if (data.unsafeTiles.length < 8)
+          return;
+
+        // We should already have 8 safe tiles from Sword Collect
+        // There are only six possible patterns:
+        // 1. All inside tiles safe.
+        // 2. No inside tiles safe (all intercard pairs safe).
+        // 3-6.  Inside East&West OR North&South safe.
+        const safeTiles: TileName[] = tileNames.filter((tile) => !data.unsafeTiles.includes(tile));
+        if (safeTiles.length !== 8)
+          return;
+
+        const insidePriority: TileName[] = ['insideEast', 'insideNorth'];
+        const northSouthPriority: TileName[] = ['northCorner', 'insideNorth'];
+
+        const priority = data.triggerSetConfig.chasmVollokPriority === 'inside'
+          ? insidePriority
+          : northSouthPriority;
+
+        const safeTile = priority.find((tile) => safeTiles.includes(tile));
+        const insideSafe = safeTiles.includes('insideEast') && safeTiles.includes('insideNorth');
+
+        if (data.seenHalfCircuit && insideSafe) {
+          // Prefer the inside section if we don't also have a half room
+          // cleave. Otherwise, use the standard strategy.
+          return output.inside!();
+        } else if (safeTile === 'insideEast') {
+          // insideEast is always safe together with insideWest
+          return output.eastWest!();
+        } else if (safeTile === 'insideNorth') {
+          // insideNorth is always safe together with insideSouth
+          if (data.triggerSetConfig.chasmVollokPriority === 'north')
+            return output.insideN!();
+          if (data.triggerSetConfig.chasmVollokPriority === 'south')
+            return output.insideS!();
+          return output.insideNS!();
+        } else if (safeTile === 'northCorner') {
+          // northCorner is always safe together with southCorner
+          if (data.triggerSetConfig.chasmVollokPriority === 'north')
+            return output.cornerN!();
+          if (data.triggerSetConfig.chasmVollokPriority === 'south')
+            return output.cornerS!();
+          return output.cornerNS!();
+        }
+        return output.intercard!();
+      },
+      run: (data) => {
+        if (data.seenHalfCircuit && data.unsafeTiles.length >= 8)
+          data.unsafeTiles = [];
+      },
+      outputStrings: {
+        inside: {
+          en: 'Inner Diamonds',
+        },
+        eastWest: {
+          en: 'Inner East/West Diamonds',
+        },
+        insideNS: {
+          en: 'Inner North/South Diamonds',
+        },
+        insideN: {
+          en: 'Inner North Diamond',
+        },
+        insideS: {
+          en: 'Inner South Diamond',
+        },
+        cornerNS: {
+          en: 'North/South Corners',
+        },
+        cornerN: {
+          en: 'North Corner',
+        },
+        cornerS: {
+          en: 'South Corner',
+        },
+        intercard: {
+          en: 'Outside Intercard Diamonds (Avoid Corners)',
+        },
       },
     },
     {
@@ -520,7 +602,7 @@ const triggerSet: TriggerSet<Data> = {
 
         const safeTiles: TileName[] = tileNames.filter((tile) => !data.unsafeTiles.includes(tile));
         if (safeTiles.length !== 8)
-          return;
+          return leanOutput;
 
         const insidePriority: TileName[] = ['insideEast', 'insideNorth'];
         const northSouthPriority: TileName[] = ['northCorner', 'insideNorth'];
@@ -561,99 +643,36 @@ const triggerSet: TriggerSet<Data> = {
       outputStrings: {
         insideWest: {
           en: 'Inner West Diamond',
-          de: 'Innerer Westlicher Diamant',
-          fr: 'Diamant intérieur Ouest',
-          ja: '内側 西の床へ',
-          cn: '内侧 左地板',
-          ko: '안 왼쪽 칸',
         },
         insideEast: {
           en: 'Inner East Diamond',
-          de: 'Innerer Östlicher Diamant',
-          fr: 'Diamant intérieur Est',
-          ja: '内側 東の床へ',
-          cn: '内侧 右地板',
-          ko: '안 오른쪽 칸',
         },
         insideNS: {
           en: 'Inner North/South Diamonds - ${lean}',
-          de: 'Innerer Nördlicher/Südlicher Diamant - ${lean}',
-          fr: 'Diamant intérieur Nord/Sud - ${lean}',
-          ja: '内側 南/北の床へ - ${lean}',
-          cn: '内侧 上/下地板 - ${lean}',
-          ko: '안 남/북쪽 칸 - ${lean}',
         },
         insideN: {
           en: 'Inner North Diamond - ${lean}',
-          de: 'Innerer Nord Diamont - ${lean}',
-          fr: 'Diamand intérieur Nord - ${lean}',
-          ja: '内側 北の床へ - ${lean}',
-          cn: '内侧 上地板 - ${lean}',
-          ko: '안 북쪽 칸 - ${lean}',
         },
         insideS: {
           en: 'Inner South Diamond - ${lean}',
-          de: 'Innerer Süd Diamont - ${lean}',
-          fr: 'Diamand intérieur Sud - ${lean}',
-          ja: '内側 南の床へ - ${lean}',
-          cn: '内侧 下地板 - ${lean}',
-          ko: '안 남쪽 칸 - ${lean}',
         },
         cornerNS: {
-          en: 'North/South Corner Diamonds - ${lean}',
-          de: 'Nord/Süd Eck-Diamonten - ${lean}',
-          fr: 'Diamand coin Nord/Sud - ${lean}',
-          ja: '北/南の隅の床へ - ${lean}',
-          cn: '上/下角地板 - ${lean}',
-          ko: '남/북쪽 구석 칸 - ${lean}',
-        },
-        cornerN: {
-          en: 'North Corner Diamond - ${lean}',
-          de: 'Nord Eck-Diamont - ${lean}',
-          fr: 'Diamand coin Nord - ${lean}',
-          ja: '北の隅の床へ - ${lean}',
-          cn: '上角落地板 - ${lean}',
-          ko: '북쪽 구석 칸 - ${lean}',
+          en: 'North Corner - ${lean}',
         },
         cornerS: {
-          en: 'South Corner Diamond - ${lean}',
-          de: 'Süd Eck-Diamont - ${lean}',
-          fr: 'Diamand coin Sud - ${lean}',
-          ja: '南の隅の床へ - ${lean}',
-          cn: '下角落地板 - ${lean}',
-          ko: '남쪽 구석 칸 - ${lean}',
+          en: 'South Corner - ${lean}',
         },
         leanWest: {
           en: 'Lean West',
-          de: 'Westlich halten',
-          fr: 'Vers l\'Ouest',
-          ja: '西寄り',
-          cn: '偏左',
-          ko: '왼쪽',
         },
         leanEast: {
           en: 'Lean East',
-          de: 'Östlich halten',
-          fr: 'Vers l\'Est',
-          ja: '東寄り',
-          cn: '偏右',
-          ko: '오른쪽',
         },
         intercardsEast: {
           en: 'Outer Intercard Diamonds - East',
-          de: 'Äußere Interkardinale Diamanten - Osten',
-          fr: 'Diamant extérieur intercardinal - Est',
-          ja: '外側 斜めの床 - 東',
-          cn: '外侧 斜边地板 - 右',
-          ko: '바깥 구석 칸 - 동쪽',
         },
         intercardsWest: {
           en: 'Outer Intercard Diamonds - West',
-          de: 'Äußere Interkardinale Diamanten - Westen',
-          fr: 'Diamant extérieur intercardinal - Ouest',
-          ja: '外側 斜めの床 - 西',
-          cn: '外侧 斜边地板 - 左',
-          ko: '바깥 구석 칸 - 서쪽',
         },
       },
     },
@@ -1245,134 +1264,6 @@ const triggerSet: TriggerSet<Data> = {
           ja: 'ボスの右側',
           cn: 'BOSS右侧',
           ko: '보스 오른쪽',
-        },
-      },
-    },
-    {
-      // This Chasm Of Vollok happens in swords2 and has no Half Full cleave.
-      id: 'Zoraal Ja Ex Chasm Of Vollok No Cleave',
-      type: 'StartsUsing',
-      netRegex: { id: '9399', source: 'Fang', capture: false },
-      condition: (data) => data.phase === 'swords' && data.seenHalfCircuit,
-      delaySeconds: 1,
-      durationSeconds: 6,
-      suppressSeconds: 1,
-      alertText: (data, _matches, output) => {
-        // We should already have 8 safe tiles from Sword Collect
-        // There are only six possible patterns:
-        // 1. All inside tiles safe.
-        // 2. No inside tiles safe (all intercard pairs safe).
-        // 3-6.  Inside East&West OR North&South safe.
-        const safeTiles: TileName[] = tileNames.filter((tile) => !data.unsafeTiles.includes(tile));
-        if (safeTiles.length !== 8)
-          return;
-
-        const insidePriority: TileName[] = ['insideEast', 'insideNorth'];
-        const northSouthPriority: TileName[] = ['northCorner', 'insideNorth'];
-
-        const priority = data.triggerSetConfig.chasmVollokPriority === 'inside'
-          ? insidePriority
-          : northSouthPriority;
-
-        const safeTile = priority.find((tile) => safeTiles.includes(tile));
-        const insideSafe = safeTiles.includes('insideEast') && safeTiles.includes('insideNorth');
-
-        if (insideSafe) {
-          // Always prefer inside safe first
-          return output.inside!();
-        } else if (safeTile === 'insideEast') {
-          // insideEast is always safe together with insideWest
-          return output.eastWest!();
-        } else if (safeTile === 'insideNorth') {
-          // insideNorth is always safe together with insideSouth
-          if (data.triggerSetConfig.chasmVollokPriority === 'north')
-            return output.insideN!();
-          if (data.triggerSetConfig.chasmVollokPriority === 'south')
-            return output.insideS!();
-          return output.insideNS!();
-        } else if (safeTile === 'northCorner') {
-          // northCorner is always safe together with southCorner
-          if (data.triggerSetConfig.chasmVollokPriority === 'north')
-            return output.cornerN!();
-          if (data.triggerSetConfig.chasmVollokPriority === 'south')
-            return output.cornerS!();
-          return output.cornerNS!();
-        }
-        return output.intercard!();
-      },
-      run: (data) => data.unsafeTiles = [],
-      outputStrings: {
-        inside: {
-          en: 'Inside Safe',
-          de: 'Innen sicher',
-          fr: 'Intérieur sûr',
-          ja: '内側が安地',
-          cn: '内侧安全',
-          ko: '안쪽 안전',
-        },
-        eastWest: {
-          en: 'Inside East/West Safe',
-          de: 'Innen Osten/Westen sicher',
-          fr: 'Intérieur Est/Ouest sûr',
-          ja: '内側 東/西が安地',
-          cn: '内侧 左/右安全',
-          ko: '안쪽 동/서 안전',
-        },
-        insideNS: {
-          en: 'Inside North/South Safe',
-          de: 'Innen Norden/Süden sicher',
-          fr: 'Intérieur Nord/Sud sûr',
-          ja: '内側 北/南が安地',
-          cn: '内侧 上/下安全',
-          ko: '안쪽 북/남 안전',
-        },
-        insideN: {
-          en: 'Inside North Safe',
-          de: 'Innen Norden sicher',
-          fr: 'Nord intérieur sûr',
-          ja: '内側 北が安地',
-          cn: '内侧 上安全',
-          ko: '안쪽 북 안전',
-        },
-        insideS: {
-          en: 'Inside South Safe',
-          de: 'Innen Süden sicher',
-          fr: 'Sud intérieur sûr',
-          ja: '内側 南が安地',
-          cn: '内侧 下安全',
-          ko: '안쪽 남 안전',
-        },
-        cornerNS: {
-          en: 'North/South Corners Safe',
-          de: 'Norden/Süden Ecken sicher',
-          fr: 'Coin Nord/Sud sûrs',
-          ja: '北/南の隅が安地',
-          cn: '上/下角落安全',
-          ko: '남/북쪽 구석 안전',
-        },
-        cornerN: {
-          en: 'North Corner Safe',
-          de: 'Norden Ecken sicher',
-          fr: 'Coin Nord sûr',
-          ja: '北の隅が安地',
-          cn: '上角落安全',
-          ko: '북쪽 구석 안전',
-        },
-        cornerS: {
-          en: 'South Corner Safe',
-          de: 'Süden Ecken sicher',
-          fr: 'Coin Sud sûr',
-          ja: '南の隅が安地',
-          cn: '下角落安全',
-          ko: '남쪽 구석 안전',
-        },
-        intercard: {
-          en: 'Outside Intercards Safe (Avoid Corners)',
-          de: 'Außen Interkardinal sicher (Ecken vermeiden)',
-          fr: 'Intercardinal extérieur sûr (Évitez les coins)',
-          ja: '外側 斜めが安地（隅に注意）',
-          cn: '外侧 斜边安全 (角落危险)',
-          ko: '바깥쪽 사선 안전 (구석 피하기)',
         },
       },
     },
