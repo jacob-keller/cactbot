@@ -1829,8 +1829,8 @@ const triggerSet: TriggerSet<Data> = {
       // param1: 11D9 - second, left cleave
       netRegex: { category: '0197', param1: ['11D6', '11D7', '11D8', '11D9'] },
       condition: (data) => data.phase === 'twilight',
-      // delay 0.1s to prevent out-of-order line issues
-      delaySeconds: 0.1,
+      // delay to give time for animation to start
+      delaySeconds: 2,
       durationSeconds: 9,
       alertText: (data, matches, output) => {
         data.replicaCleaveCount++;
