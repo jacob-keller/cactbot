@@ -2745,6 +2745,7 @@ const triggerSet: TriggerSet<Data> = {
       type: 'GainsEffect',
       // The red soldiers get 1E8 effects, and the blue add gets 5E.
       netRegex: { effectId: '808', count: '5E' },
+      delaySeconds: 4,
       promise: async (data, matches) => {
         data.combatantData = [];
         data.combatantData = (await callOverlayHandler({
