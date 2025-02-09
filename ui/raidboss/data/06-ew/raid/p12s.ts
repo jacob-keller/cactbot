@@ -3218,7 +3218,7 @@ const triggerSet: TriggerSet<Data> = {
             ko: '왼쪽',
           },
           circle: {
-            en: 'Red Circle',
+            en: 'Orange Circle',
             de: 'Roter Kreis',
             fr: 'Cercle rouge',
             ja: '赤まる',
