@@ -3382,7 +3382,7 @@ const triggerSet: TriggerSet<Data> = {
             tc: '靠西',
           },
           circle: {
-            en: 'Red Circle',
+            en: 'Orange Circle',
             de: 'Roter Kreis',
             fr: 'Cercle rouge',
             ja: '赤まる',
