@@ -150,7 +150,7 @@ const triggerSet: TriggerSet<Data> = {
       netRegex: { id: ['9DFD', '9DFB', '9DFF'], source: 'Cloud of Darkness', capture: true },
       durationSeconds: (data) => data.bladeOfDarknessFollowup !== undefined ? 10 : 5,
       suppressSeconds: 2,
-      infoText: (data, matches, output) => {
+      alertText: (data, matches, output) => {
         const mech = matches.id === '9DFD' ? 'left' : (matches.id === '9DFB' ? 'right' : 'out');
         const mechOutput = output[mech]!();
         const followup = data.bladeOfDarknessFollowup;
