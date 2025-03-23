@@ -246,6 +246,19 @@ const triggerSet: TriggerSet<Data> = {
       },
     },
     {
+      id: 'Cloud Cloudlets of Darkness Spawn',
+      type: 'AddedCombatant',
+      // 13629 = Cloudlet of Darkness
+      netRegex: { npcNameId: '13629', capture: false },
+      suppressSeconds: 1,
+      infoText: (_data, _matches, output) => output.lasers!(),
+      outputStrings: {
+        lasers: {
+          en: 'Watch for Lasers',
+        },
+      },
+    },
+    {
       id: 'Cloud Chaotic Rapid-sequence Particle Beam',
       type: 'StartsUsing',
       netRegex: { id: '9E40', source: 'Cloud of Darkness', capture: false },
