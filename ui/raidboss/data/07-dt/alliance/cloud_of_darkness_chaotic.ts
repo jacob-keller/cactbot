@@ -314,13 +314,25 @@ const triggerSet: TriggerSet<Data> = {
       id: 'Cloud Chaotic Endeath IV Collector',
       type: 'StartsUsing',
       netRegex: { id: '9E53', source: 'Cloud of Darkness', capture: false },
+      infoText: (_data, _matches, output) => output.stored!(),
       run: (data) => data.bladeOfDarknessFollowup = 'death',
+      outputStrings: {
+        stored: {
+          en: 'Stored Death',
+        },
+      },
     },
     {
       id: 'Cloud Chaotic Enaero IV Collector',
       type: 'StartsUsing',
       netRegex: { id: '9E54', source: 'Cloud of Darkness', capture: false },
+      infoText: (_data, _matches, output) => output.stored!(),
       run: (data) => data.bladeOfDarknessFollowup = 'aero',
+      outputStrings: {
+        stored: {
+          en: 'Stored Aero',
+        },
+      },
     },
     {
       id: 'Cloud Chaotic Death IV',
