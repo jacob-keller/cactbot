@@ -31,7 +31,9 @@ const triggerSet: TriggerSet<Data> = {
       type: 'Ability',
       netRegex: { id: '1D6D' },
       condition: (data, matches) => {
-        if (matches.source !== data.me && !data.party.inAlliance(matches.source))
+        // Limit to party.. ideally wold like to figure out how to do this
+        // only for Chaotic raid.
+        if (matches.source !== data.me && !data.party.inParty(matches.source))
           return false;
         return caresAboutTankStuff(data);
       },
@@ -96,7 +98,9 @@ const triggerSet: TriggerSet<Data> = {
       type: 'Ability',
       netRegex: { id: '1D71' },
       condition: (data, matches) => {
-        if (matches.source !== data.me && !data.party.inAlliance(matches.source))
+        // Limit to party.. ideally would like to be able to do this only
+        // for chaotic raid.
+        if (matches.source !== data.me && !data.party.inParty(matches.source))
           return false;
         return caresAboutTankStuff(data);
       },
