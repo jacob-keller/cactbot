@@ -216,6 +216,23 @@ const triggerSet: TriggerSet<Data> = {
       },
     },
     {
+      id: 'Cloud Chaotic Deadly Embrace (Later)',
+      type: 'GainsEffect',
+      netRegex: { effectId: '1055', capture: true },
+      condition: Conditions.targetIsYou(),
+      durationSeconds: 5,
+      infoText: (data, _matches, output) => output[data.deadlyEmbraceDodgeDirectionCollected]!(),
+      outputStrings: {
+        back: {
+          en: 'Dodge Backwards (Later)',
+        },
+        front: {
+          en: 'Dodge Forwards (Later)',
+        },
+        unknown: Outputs.unknown,
+      },
+    },
+    {
       id: 'Cloud Chaotic Deadly Embrace',
       type: 'GainsEffect',
       netRegex: { effectId: '1055', capture: true },
