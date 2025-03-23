@@ -33,7 +33,11 @@ const triggerSet: TriggerSet<Data> = {
       type: 'Ability',
       netRegex: { id: '1D6D' },
       condition: (data, matches) => {
-        if (matches.source !== data.me && !data.party.inAlliance(matches.source))
+        // Limit this to party when in Chaotic Alliance Raid
+        if (
+          data.zoneId === ZoneId.TheCloudOfDarknessChaotic &&
+          matches.source !== data.me && !data.party.inParty(matches.source)
+        )
           return false;
         return caresAboutTankStuff(data);
       },
@@ -103,7 +107,11 @@ const triggerSet: TriggerSet<Data> = {
       type: 'Ability',
       netRegex: { id: '1D71' },
       condition: (data, matches) => {
-        if (matches.source !== data.me && !data.party.inAlliance(matches.source))
+        // Limit this to party when in Chaotic Alliance Raid
+        if (
+          data.zoneId === ZoneId.TheCloudOfDarknessChaotic &&
+          matches.source !== data.me && !data.party.inParty(matches.source)
+        )
           return false;
         return caresAboutTankStuff(data);
       },
