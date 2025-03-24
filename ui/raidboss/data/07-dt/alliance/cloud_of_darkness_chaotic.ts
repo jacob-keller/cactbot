@@ -325,6 +325,7 @@ const triggerSet: TriggerSet<Data> = {
       // 9E51 = dummy cast from adds (source: Sinister Eye)
       // 9E52 = actual cast from adds (sometimes has stale source name)
       netRegex: { id: '9E4F', source: 'Cloud of Darkness', capture: false },
+      durationSeconds: 5,
       response: Responses.lookAway(),
     },
     {
