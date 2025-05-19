@@ -587,36 +587,24 @@ const triggerSet: TriggerSet<Data> = {
       },
       outputStrings: {
         inWest: {
-          en: 'In WSW => Out WNW => Out WSW',
-          de: 'Rein WSW => Raus WNW => Raus WSW',
-          fr: 'Intérieur OSO => Extérieur ONO => Extérieur OSO',
-          ja: '内8時 ⇒ 外10時 ⇒ 外8時',
-          cn: '内左偏下 => 外左偏上 => 外左偏下',
-          ko: '안 8시 => 바깥 10시 => 바깥 8시',
+          // In WSW => Out WNW => Out WSW
+          // en: 'West, In+South => Out+Diagonal => Out+South',
+          en: 'West, In+South => Out+North => Out+South',
         },
         inEast: {
-          en: 'In ESE => Out ESE => Out ENE',
-          de: 'Rein OSO => Raus OSO => Raus ONO',
-          fr: 'Intérieur ESE => Extérieur ESE => Intérieur ENE',
-          ja: '内4時 ⇒ 外4時 ⇒ 外2時',
-          cn: '内右偏下 => 外右偏下 => 外右偏上',
-          ko: '안 4시 => 바깥 4시 => 바깥 2시',
+          // In ESE => Out ESE => Out ENE
+          // en: 'East, In+South => Out => North',
+          en: 'East, In+South => Out+South => Out+North',
         },
         outWest: {
-          en: 'Out WSW => In WNW => In WSW',
-          de: 'Raus WSW => Rein WNW => Rein WSW',
-          fr: 'Extérieur OSO => Intérieur ONO => Intérieur OSO',
-          ja: '外8時 ⇒ 内10時 ⇒ 内8時',
-          cn: '外左偏下 => 内左偏上 => 内左偏下',
-          ko: '바깥 8시 => 안 10시 => 안 8시',
+          // Out WSW => In WNW => In WSW
+          // en: 'West, Out+South => In+Diagonal => South',
+          en: 'West, Out+South => In+North => In+South',
         },
         outEast: {
-          en: 'Out ESE => In ESE => In ENE',
-          de: 'Raus OSO => Rein OSO => Rein ONO',
-          fr: 'Extérieur ESE => Intérieur ESE => Intérieur ENE',
-          ja: '外4時 ⇒ 内4時 ⇒ 内2時',
-          cn: '外右偏下 => 内右偏下 => 内右偏上',
-          ko: '바깥 4시 => 안 4시 => 안 2시',
+          // Out ESE => In ESE => In ENE
+          // en: 'East, Out+South => In => North',
+          en: 'East, Out+South => In+South => In+North',
         },
       },
     },
