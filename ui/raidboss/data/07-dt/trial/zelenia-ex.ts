@@ -323,7 +323,7 @@ const triggerSet: TriggerSet<Data> = {
           'DPS 先': 'dpsFirst',
         },
       },
-      default: 'none',
+      default: 'dpsIn',
     },
   ],
   timelineFile: 'zelenia-ex.txt',
