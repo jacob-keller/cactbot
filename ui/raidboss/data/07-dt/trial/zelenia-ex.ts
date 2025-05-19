@@ -218,6 +218,9 @@ const defaultTileState = () => ({
 } as const);
 
 export interface Data extends RaidbossData {
+  readonly triggerSetConfig: {
+    escelonsFall: 'dpsIn' | 'supportFirst' | 'dpsFirst' | 'none';
+  };
   phase: Phase;
   tileState: {
     [loc in MapEffectTile]: 'unknown' | 'red' | 'grey';
@@ -232,6 +235,32 @@ export interface Data extends RaidbossData {
 const triggerSet: TriggerSet<Data> = {
   id: 'RecollectionExtreme',
   zoneId: ZoneId.RecollectionExtreme,
+  config: [
+    {
+      id: 'escelonsFall',
+      name: {
+        en: 'Escelons Fall Strategy',
+      },
+      comment: {
+        en: `Strategy for resolving Escelons' Fall 1 and 3.
+
+            None - Just call the first bait.
+            DPS In - DPS always start in, Support always start out.
+            Support First - Support bait the first hit.
+            DPS First - DPS bait the first hit.`,
+      },
+      type: 'select',
+      options: {
+        en: {
+          'None': 'None',
+          'DPS In': 'dpsIn',
+          'Support First': 'supportFirst',
+          'DPS First': 'dpsFirst',
+        },
+      },
+      default: 'none',
+    },
+  ],
   timelineFile: 'zelenia-ex.txt',
   initData: () => ({
     escelonFallBaits: [],
@@ -304,51 +333,57 @@ const triggerSet: TriggerSet<Data> = {
         if (bait1 === undefined || bait2 === undefined)
           return;
 
+        let first = 'unknown';
+
+        if (data.triggerSetConfig.escelonsFall === 'dpsIn') {
+          if (data.role === 'tank' || data.role === 'healer') {
+            first = 'out';
+          } else {
+            first = 'in';
+          }
+        } else if (data.triggerSetConfig.escelonsFall === 'supportFirst') {
+          if (data.role === 'tank' || data.role === 'healer') {
+            first = bait1 === 'near' ? 'in' : 'out';
+          } else {
+            first = bait1 === 'near' ? 'out' : 'in';
+          }
+        } else if (data.triggerSetConfig.escelonsFall === 'dpsFirst') {
+          if (data.role === 'tank' || data.role === 'healer') {
+            first = bait1 === 'near' ? 'out' : 'in';
+          } else {
+            first = bait1 === 'near' ? 'in' : 'out';
+          }
+        } else {
+          first = bait1;
+        }
+
         if (bait1 === bait2) {
           return output.swapAfterFirst!({
-            first: output[bait1]!(),
+            first: output[first]!(),
           });
         }
         return output.swapAfterSecond!({
-          first: output[bait1]!(),
+          first: output[first]!(),
         });
       },
       outputStrings: {
         near: {
-          en: 'Near',
-          de: 'Nah',
-          fr: 'proche',
-          ja: '近',
-          cn: '近',
-          ko: '가까이',
-          tc: '近',
+          en: 'Near bait first',
         },
         far: {
-          en: 'Far',
-          de: 'Fern',
-          fr: 'loin',
-          ja: '遠',
-          cn: '远',
-          ko: '멀리',
-          tc: '遠',
+          en: 'Far bait first',
+        },
+        out: {
+          en: 'Start out',
+        },
+        in: {
+          en: 'Start in',
         },
         swapAfterFirst: {
-          en: '${first} bait first, Swap after first+third',
-          de: '${first} zuerst ködern, wechsel nach dem ersten + dritten',
-          fr: 'Bait ${first} d\'abord, échangez après le 1er et 3ème',
-          ja: '${first} を先に誘導 → 1・3回目後に交代',
-          cn: '先 ${first} 引导, 1、3刀后交换',
-          ko: '처음 ${first} 유도, 1, 3번째 이후 교대',
-          tc: '先 ${first} 引導, 1、3刀後交換',
+          en: '${first}, Swap after first+third',
         },
         swapAfterSecond: {
-          en: '${first} bait first, Swap after second',
-          de: '${first} zuerst ködern, wechsel nach dem zweiten',
-          fr: 'Bait ${first} d\'abord, échangez après le 2ème',
-          ja: '${first} を先に誘導 → 2回目後に交代',
-          cn: '先 ${first} 引导, 2刀后交换',
-          ko: '처음 ${first} 유도, 2번째 이후 교대',
-          tc: '先 ${first} 引導, 2刀後交換',
+          en: '${first}, Swap after second',
         },
       },
     },
