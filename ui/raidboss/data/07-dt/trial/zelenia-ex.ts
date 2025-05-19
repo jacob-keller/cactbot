@@ -152,8 +152,6 @@ const mapEffectData: MapEffectData = {
   },
 } as const;
 
-const mapEffectTiles: MapEffectTile[] = Object.keys(mapEffectData) as MapEffectTile[];
-
 const isTileLoc = (loc: string): loc is TileSlotsType => {
   return tileSlots.includes(loc as TileSlotsType);
 };
@@ -228,7 +226,6 @@ export interface Data extends RaidbossData {
     [loc in MapEffectTile]: 'unknown' | 'red' | 'grey';
   };
   escelonFallBaits: ('near' | 'far')[];
-  bloom1StartDir?: number;
   bloom4RoseDirNorth: boolean;
   bloom5FirstDirSafe: 'dirNE' | 'dirNW' | 'dirSE' | 'dirSW' | 'unknown';
   bloom5SecondDirSafe: 'dirNE' | 'dirNW' | 'dirSE' | 'dirSW' | 'unknown';
@@ -540,58 +537,21 @@ const triggerSet: TriggerSet<Data> = {
       response: Responses.bigAoe(),
     },
     {
-      id: 'ZeleniaEx Bloom 1 Rotation Collector',
-      type: 'MapEffect',
-      netRegex: {
-        location: tileSlots,
-        flags: [bloomTileFlags.red, bloomTileFlags.grey, bloomTileFlags.greyToRed],
-        capture: false,
-      },
-      condition: (data) => data.phase === 'bloom1',
-      delaySeconds: 0.5,
-      suppressSeconds: 100,
-      run: (data) => {
-        let dirIdx = 1;
-        let foundGrey = false;
-
-        // Find the 1st inner tile clockwise that's grey
-        for (const key of mapEffectTiles) {
-          if (!key.includes('Inner'))
-            continue;
-          if (foundGrey) {
-            if (data.tileState[key] === 'red') {
-              // Special edge case, NNW is safe
-              dirIdx = 15;
-            } else {
-              dirIdx += 2;
-            }
-            break;
-          }
-
-          if (data.tileState[key] === 'grey') {
-            foundGrey = true;
-            continue;
-          }
-
-          dirIdx += 2;
-        }
-
-        data.bloom1StartDir = dirIdx;
-      },
-    },
-    {
-      id: 'ZeleniaEx Bloom 1 Rotation',
+      id: 'ZeleniaEx Bloom 1',
       type: 'HeadMarker',
       netRegex: { id: [headMarkerData.clockwise, headMarkerData.counterclockwise], capture: true },
-      infoText: (data, matches, output) =>
+      infoText: (_data, matches, output) =>
         output.text!({
-          dir: output[Directions.output16Dir[data.bloom1StartDir ?? -1] ?? 'unknown']!(),
+          dir: matches.id === headMarkerData.clockwise
+            ? output.dirSE!()
+            : output.dirN!(),
           rotate: matches.id === headMarkerData.clockwise
             ? output.clockwise!()
             : output.counterclockwise!(),
         }),
       outputStrings: {
-        ...Directions.outputStrings16Dir,
+        dirN: Outputs.dirN,
+        dirSE: Outputs.dirSE,
         clockwise: Outputs.clockwise,
         counterclockwise: Outputs.counterclockwise,
         text: {
