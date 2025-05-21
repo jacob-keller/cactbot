@@ -125,12 +125,12 @@ const cactusSpamPatterns: CactusPattern[] = [
   { id: '4', x: 110.996, y: 116.001 },
 ];
 
-// Positions for cacti corresponding to danger corner
+// Positions for cacti corresponding to party safe corner
 const cactusQuicksandPatterns: CactusPattern[] = [
-  { id: 'dirNE', x: 116.001, y: 83.987 },
-  { id: 'dirSE', x: 116.001, y: 116.001 },
-  { id: 'dirSW', x: 83.987, y: 116.001 },
-  { id: 'dirNW', x: 83.987, y: 83.987 },
+  { id: 'dirSW', x: 116.001, y: 83.987 },
+  { id: 'dirNW', x: 116.001, y: 116.001 },
+  { id: 'dirNE', x: 83.987, y: 116.001 },
+  { id: 'dirSE', x: 83.987, y: 83.987 },
 ];
 
 const findCactus = <T extends CactusPattern>(
@@ -625,11 +625,7 @@ const triggerSet: TriggerSet<Data> = {
         unknown: Outputs.unknown,
         ...Directions.outputStrings8Dir,
         cactus: {
-          en: 'Danger Cactus ${dir}',
-          de: 'Gefährlicher Kaktus ${dir}',
-          fr: 'Cactus dangereux ${dir}',
-          cn: '危险仙人掌 ${dir}',
-          ko: '위험한 선인장 ${dir}',
+          en: 'Party ${dir}',
         },
       },
     },
