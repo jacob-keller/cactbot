@@ -71,6 +71,7 @@ const pollenFlagMap: { [location: string]: PatternMapValues } = {
 export interface Data extends RaidbossData {
   brutalImpactCount: number;
   sinisterSeedTargets: string[];
+  strangeSeedsCount: number;
   storedStoneringer?: 'in' | 'out';
   stoneringer2Count: number;
   stoneringer2Followup?: boolean;
@@ -87,6 +88,7 @@ const triggerSet: TriggerSet<Data> = {
   initData: () => ({
     brutalImpactCount: 6,
     sinisterSeedTargets: [],
+    strangeSeedsCount: 0,
     stoneringer2Count: 0,
   }),
   timelineTriggers: [
@@ -587,19 +589,29 @@ const triggerSet: TriggerSet<Data> = {
       },
     },
     {
+      id: 'R7S Strange Seeds Collector',
+      type: 'StartsUsing',
+      netRegex: { id: 'A598', source: 'Brute Abombinator', capture: false },
+      suppressSeconds: 0.2,
+      run: (data) => data.strangeSeedsCount++,
+    },
+    {
       id: 'R7S Strange Seeds',
       type: 'StartsUsing',
       netRegex: { id: 'A598', source: 'Brute Abombinator', capture: true },
       condition: Conditions.targetIsYou(),
-      alertText: (_data, _matches, output) => output.text!(),
+      delaySeconds: 0.1,
+      alertText: (data, _matches, output) => {
+        if ((data.strangeSeedsCount % 2) === 0)
+          return output.on!();
+        return output.off!();
+      },
       outputStrings: {
-        text: {
-          en: 'Drop seed',
-          de: 'Saaten ablegen',
-          fr: 'Déposez les graines',
-          ja: '種捨て',
-          cn: '放置冰花',
-          ko: '씨앗 놓기',
+        on: {
+          en: 'Drop seed on marker',
+        },
+        off: {
+          en: 'Drop seed away',
         },
       },
     },
