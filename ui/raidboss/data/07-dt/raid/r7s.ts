@@ -89,6 +89,19 @@ const triggerSet: TriggerSet<Data> = {
     sinisterSeedTargets: [],
     stoneringer2Count: 0,
   }),
+  timelineTriggers: [
+    {
+      id: 'R7S Impact (Feint)',
+      regex: /Impact/,
+      beforeSeconds: 15,
+      infoText: (_data, _matches, output) => output.text!(),
+      outputStrings: {
+        text: {
+          en: 'Feint/Reprisal',
+        },
+      },
+    },
+  ],
   triggers: [
     {
       id: 'R7S Brutal Impact',
