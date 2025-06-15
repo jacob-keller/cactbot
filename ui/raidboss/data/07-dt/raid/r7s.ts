@@ -70,6 +70,7 @@ const pollenFlagMap: { [location: string]: PatternMapValues } = {
 
 export interface Data extends RaidbossData {
   brutalImpactCount: number;
+  pollenCount: number;
   sinisterSeedTargets: string[];
   strangeSeedsCount: number;
   storedStoneringer?: 'in' | 'out';
@@ -87,6 +88,7 @@ const triggerSet: TriggerSet<Data> = {
   timelineFile: 'r7s.txt',
   initData: () => ({
     brutalImpactCount: 6,
+    pollenCount: 0,
     sinisterSeedTargets: [],
     strangeSeedsCount: 0,
     stoneringer2Count: 0,
@@ -94,9 +96,9 @@ const triggerSet: TriggerSet<Data> = {
   timelineTriggers: [
     {
       id: 'R7S Impact (Feint)',
-      regex: /Impact/,
+      regex: /^Impact/,
       beforeSeconds: 15,
-      infoText: (_data, _matches, output) => output.text!(),
+      alertText: (_data, _matches, output) => output.text!(),
       outputStrings: {
         text: {
           en: 'Feint/Reprisal',
@@ -213,12 +215,23 @@ const triggerSet: TriggerSet<Data> = {
       id: 'R7S Pollen',
       type: 'MapEffect',
       netRegex: { location: Object.keys(pollenFlagMap), flags: '00020001', capture: true },
-      infoText: (_data, matches, output) => {
+      infoText: (data, matches, output) => {
+        data.pollenCount++;
+
         const safeSpots = pollenFlagMap[matches.location];
         if (safeSpots === undefined)
           return;
 
         const [outerSafe1, outerSafe2, innerSafe1, innerSafe2] = safeSpots;
+
+        if (data.pollenCount === 1) {
+          if (innerSafe1 === 'dirSW') {
+            return output.dirSW!();
+          } else if (innerSafe2 === 'dirSE') {
+            return output.dirSE!();
+          }
+        }
+
         return output.combo!({
           outer: output.outer!({
             dir1: output[outerSafe1]!(),
@@ -288,7 +301,7 @@ const triggerSet: TriggerSet<Data> = {
         if (data.sinisterSeedTargets.length < 4)
           return;
         if (!data.sinisterSeedTargets.includes(data.me))
-          return { alertText: output.puddle!() };
+          return { alarmText: output.puddle!() };
       },
       run: (data) => {
         if (data.sinisterSeedTargets.length >= 4)
