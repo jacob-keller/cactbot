@@ -54,6 +54,7 @@ class ExtendedArgsRequired extends Namespace implements TimelineArgs {
   'output_file': string | null;
   'start': string | null;
   'end': string | null;
+  'timeline_offset': number | null;
   'ignore_id': string[] | null;
   'ignore_ability': string[] | null;
   'ignore_combatant': string[] | null;
@@ -121,6 +122,13 @@ timelineParse.parser.addArgument(
 timelineParse.parser.addArgument(
   ['-e', '--end'],
   { type: 'string', help: 'Timestamp of the end, e.g. \'12:34:56.789' },
+);
+timelineParse.parser.addArgument(
+  ['-o', '--timeline-offset'],
+  {
+    type: 'float',
+    help: 'Start the timeline at the requested offset instead of 0.',
+  },
 );
 
 const printHelpAndExit = (errString: string): void => {
@@ -411,28 +419,39 @@ const assembleTimelineStrings = (
 ): string[] => {
   const assembled: string[] = [];
   let lastAbilityTime = start.getTime();
-  let timelinePosition = 0;
+  let timelinePosition = args.timeline_offset ?? 0;
   let lastEntry: TimelineEntry = { time: lastAbilityTime.toString(), lineType: 'None' };
   if (fight !== undefined && fight.sealName !== undefined) {
     const sealMessage = SFuncs.toProperCase(fight.sealName);
     if (fight.sealId !== undefined) {
       const sealComment = `# ${sealMessage} will be sealed off`;
-      const netLogSeal =
-        `0.0 "--sync--" SystemLogMessage { id: "7DC", param1: "${fight.sealId}" } window 0,1`;
+      const netLogSeal = `${
+        timelinePosition.toFixed(1)
+      } "--sync--" SystemLogMessage { id: "7DC", param1: "${fight.sealId}" } window 0,1`;
       assembled.push(sealComment);
       assembled.push(netLogSeal);
     } else {
-      const tlString =
-        `0.0 "--sync--" GameLog { code: "0839", line: "${sealMessage} will be sealed off.*?" } window 0,1`;
+      const tlString = `${
+        timelinePosition.toFixed(1)
+      } "--sync--" GameLog { code: "0839", line: "${sealMessage} will be sealed off.*?" } window 0,1`;
       assembled.push(tlString);
     }
   } else if (fight !== undefined && fight.ceId !== undefined) {
-    const actorControlString =
-      `0.0 "--sync--" ActorControl { command: "80000014", data0: "${fight.ceId}" } window 0,1`;
+    const actorControlString = `${
+      timelinePosition.toFixed(1)
+    } "--sync--" ActorControl { command: "80000014", data0: "${fight.ceId}" } window 100000,0`;
     assembled.push(actorControlString);
-    assembled.push('100.0 "--sync--" InCombat { inGameCombat: "1" } window 100,3');
+    timelinePosition += 100;
+
+    const combatString = `${
+      timelinePosition.toFixed(1)
+    } "--sync--" InCombat { inGameCombat: "1" } window 100,3`;
+    assembled.push(combatString);
   } else {
-    assembled.push('0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1');
+    const combatString = `${
+      timelinePosition.toFixed(1)
+    } "--sync--" InCombat { inGameCombat: "1" } window 0,1`;
+    assembled.push(combatString);
   }
 
   // If the user entered phase information,

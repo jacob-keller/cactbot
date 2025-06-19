@@ -81,12 +81,6 @@ class LogUtilArgParse {
       type: 'string',
       help: 'Export all zones that match this regex',
     });
-    this.requiredGroup.addArgument(['-a', '--adjust'], {
-      nargs: '?',
-      constant: 0,
-      type: 'float',
-      help: 'Adjust all entries in a timeline file by this amount',
-    });
     this.reportGroup.addArgument(['-k', '--key'], {
       help: 'The FFLogs API key to use, from https://www.fflogs.com/profile.',
     });
