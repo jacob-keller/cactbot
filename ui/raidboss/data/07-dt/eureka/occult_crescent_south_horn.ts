@@ -2,7 +2,7 @@ import Conditions from '../../../../../resources/conditions';
 import Outputs from '../../../../../resources/outputs';
 import { callOverlayHandler } from '../../../../../resources/overlay_plugin_api';
 import { Responses } from '../../../../../resources/responses';
-import { Directions } from '../../../../../resources/util';
+import { DirectionOutputIntercard, Directions } from '../../../../../resources/util';
 import ZoneId from '../../../../../resources/zone_id';
 import { RaidbossData } from '../../../../../types/data';
 import { PluginCombatantState } from '../../../../../types/event';
@@ -135,6 +135,16 @@ const headMarkerData = {
   // Magiatur small red pinwheel markers from Ruinous Rune (A250)
   'magitaurSmallRuinousRune': '0159',
 } as const;
+
+// Occult Crescent Critical Encounter consts
+const hinkypunkCenterX = -570.0;
+const hinkypunkCenterY = -160.0;
+
+const hinkypunkFindCloneSpot = (matches: NetMatches['StartsUsing']): DirectionOutputIntercard => {
+  const posX = parseFloat(matches.x);
+  const posY = parseFloat(matches.y);
+  return Directions.xyToIntercardDirOutput(posX, posY, hinkypunkCenterX, hinkypunkCenterY);
+};
 
 // Occult Crescent Forked Tower: Blood Demon Tablet consts
 // const demonTabletCenterX = 700;
@@ -1030,22 +1040,66 @@ const triggerSet: TriggerSet<Data> = {
       response: Responses.tankBuster(),
     },
     {
-      id: 'Occult Crescent Hinkypunk Shades Nest',
+      id: 'Occult Crescent Hinkypunk Shades Nest (Clone)',
       type: 'StartsUsing',
-      // TODO: Some of these are from boss, some are not.
-      netRegex: { source: 'Hinkypunk', id: ['A19C', 'A19D', 'A430', 'A431'], capture: true },
+      netRegex: { source: 'Hinkypunk', id: 'A431', capture: true },
       suppressSeconds: 1,
-      response: Responses.getIn(),
-      run: (_data, matches) => console.log(`Shades Nest: ${matches.id}`),
+      alertText: (_data, matches, output) => {
+        const dir = hinkypunkFindCloneSpot(matches);
+        return output.text!({ dir: output[dir]!() });
+      },
+      outputStrings: {
+        ...Directions.outputStringsIntercardDir,
+        text: {
+          en: 'In at ${dir}',
+        },
+      },
     },
     {
-      id: 'Occult Crescent Hinkypunk Shades Crossing',
+      id: 'Occult Crescent Hinkypunk Shades Nest (Boss)',
       type: 'StartsUsing',
-      // TODO: Some of these are from boss, some are not.
-      netRegex: { source: 'Hinkypunk', id: ['A19F', 'A1A0', 'A432', 'A433'], capture: true },
+      netRegex: { source: 'Hinkypunk', id: 'A430', capture: false },
+      suppressSeconds: 1,
+      response: Responses.getIn(),
+    },
+    {
+      id: 'Occult Crescent Hinkypunk Shades Crossing (Clone)',
+      type: 'StartsUsing',
+      netRegex: { source: 'Hinkypunk', id: 'A433', capture: true },
+      suppressSeconds: 1,
+      alertText: (_data, matches, output) => {
+        const dir = hinkypunkFindCloneSpot(matches);
+        return output.text!({ dir: output[dir]!() });
+      },
+      outputStrings: {
+        ...Directions.outputStringsIntercardDir,
+        text: {
+          en: 'Intercards from ${dir}',
+        },
+      },
+    },
+    {
+      id: 'Occult Crescent Hinkypunk Shades Crossing (Boss)',
+      type: 'StartsUsing',
+      netRegex: { source: 'Hinkypunk', id: 'A432', capture: false },
       suppressSeconds: 1,
       response: Responses.getIntercards(),
-      run: (_data, matches) => console.log(`Shades Nest: ${matches.id}`),
+    },
+    {
+      id: 'Occult Crescent Hinkypunk Blowout (Clone)',
+      type: 'StartsUsing',
+      netRegex: { source: 'Hinkypunk', id: ['A1A2', 'A1B5'], capture: true },
+      suppressSeconds: 1,
+      alertText: (_data, matches, output) => {
+        const dir = hinkypunkFindCloneSpot(matches);
+        return output.text!({ dir: output[dir]!() });
+      },
+      outputStrings: {
+        ...Directions.outputStringsIntercardDir,
+        text: {
+          en: 'Knockback from ${dir}',
+        },
+      },
     },
     {
       id: 'Occult Crescent Hinkypunk Lamplight',
