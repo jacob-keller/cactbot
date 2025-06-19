@@ -426,6 +426,11 @@ const assembleTimelineStrings = (
         `0.0 "--sync--" GameLog { code: "0839", line: "${sealMessage} will be sealed off.*?" } window 0,1`;
       assembled.push(tlString);
     }
+  } else if (fight !== undefined && fight.ceId !== undefined) {
+    const actorControlString =
+      `0.0 "--sync--" ActorControl { command: "80000014", data0: "${fight.ceId}" } window 0,1`;
+    assembled.push(actorControlString);
+    assembled.push('100.0 "--sync--" InCombat { inGameCombat: "1" } window 100,3');
   } else {
     assembled.push('0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1');
   }

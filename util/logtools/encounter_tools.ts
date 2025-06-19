@@ -35,6 +35,7 @@ type FightEncInfo = ZoneEncInfo & {
   endType?: string;
   sealName?: string;
   sealId?: string;
+  ceId?: string;
   logLines?: string[];
   inferredStartFromAbility?: boolean;
 };
@@ -365,6 +366,7 @@ export class EncounterFinder {
     this.currentFight = {
       fightName: fightName,
       sealId: sealId,
+      ceId: this.currentCE,
       zoneName: this.currentZone.zoneName,
       startLine: line,
       startTime: TLFuncs.dateFromMatches(matches),
@@ -450,24 +452,6 @@ class EncounterCollector extends EncounterFinder {
     this.currentZone.endTime = TLFuncs.dateFromMatches(matches);
     this.zones.push(this.currentZone);
     this.initializeZone();
-  }
-
-  override onStartFight(
-    line: string,
-    matches: NetMatches['Ability' | 'GameLog' | 'SystemLogMessage' | 'InCombat'],
-    fightName?: string,
-    sealId?: string,
-  ): void {
-    this.currentFight = {
-      fightName: fightName,
-      sealId: sealId,
-      zoneName: this.currentZone.zoneName,
-      startLine: line,
-      startTime: TLFuncs.dateFromMatches(matches),
-      zoneId: this.currentZone.zoneId,
-      inferredStartFromAbility: false,
-      logLines: [line],
-    };
   }
 
   override onEndFight(line: string, matches: NetAnyMatches, endType: string): void {
