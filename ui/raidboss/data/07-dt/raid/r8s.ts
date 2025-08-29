@@ -997,6 +997,7 @@ const triggerSet: TriggerSet<Data> = {
       condition: (data, matches) => {
         return data.me === matches.target && data.phase === 'adds';
       },
+      durationSeconds: 10,
       response: (data, matches, output) => {
         // cactbot-builtin-response
         output.responseOutputStrings = stoneWindOutputStrings;
