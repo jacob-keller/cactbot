@@ -113,7 +113,7 @@ const data: CeInfoType = {
     },
   },
   'TheForkedTowerBlood': {
-    'directorId': '',
+    'directorId': '33B',
     'name': {
       'de': 'Der Turm des Blutes',
       'en': 'The Forked Tower: Blood',

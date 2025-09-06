@@ -72,6 +72,7 @@ const _DIRECTOR_UPDATE_VALUES: NameKeyToDirectorUpdateId = {
   'CursedConcern': '32B',
   'EternalWatch': '329',
   'FlameOfDusk': '32A',
+  'TheForkedTowerBlood': '33B',
 };
 
 const Overrides: OverrideContainer = {
