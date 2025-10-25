@@ -86,6 +86,12 @@ const triggerSet: TriggerSet<Data> = {
   ],
   triggers: [
     {
+      id: 'ZeromusEx Flare Move Away',
+      type: 'Ability',
+      netRegex: { id: '8B5D', source: 'Zeromus', capture: false },
+      response: Responses.moveAway(),
+    },
+    {
       id: 'ZeromusEx Abyssal Nox',
       type: 'GainsEffect',
       netRegex: { effectId: '6E9', capture: false },
