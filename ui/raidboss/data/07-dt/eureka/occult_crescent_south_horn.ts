@@ -2880,8 +2880,15 @@ const triggerSet: TriggerSet<Data> = {
         if (
           data.deadStarsSnowballTetherDirNum === undefined &&
           data.deadStarsSnowballTetherCount === 2
-        )
+        ) {
+          // If the player is targetted but somehow doesn't have a defined
+          // direction, use an alarm here to better indicate they have (at
+          // least one) tether..
+          if (data.me === matches.target)
+            return { alarmText: output.knockbackToSnowball!() };
+
           return { alertText: output.knockbackToSnowball!() };
+        }
       },
     },
     {
