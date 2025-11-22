@@ -191,7 +191,7 @@ const triggerSet: TriggerSet<Data> = {
     {
       id: 'UWU Feather Rain',
       regex: /Feather Rain/,
-      beforeSeconds: 3,
+      beforeSeconds: 2.7,
       suppressSeconds: 3,
       infoText: (_data, _matches, output) => output.text!(),
       outputStrings: {
