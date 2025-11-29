@@ -1346,7 +1346,8 @@ const triggerSet: TriggerSet<Data> = {
           console.log(`GAOL FINAL ORDER: ${JSON.stringify(data.titanGaols)}`);
         }
       },
-      alertText: (data, _matches, output) => {
+      durationSeconds: 7,
+      alarmText: (data, _matches, output) => {
         if (data.titanGaols.length !== 3)
           return;
         const idx = data.titanGaols.indexOf(data.me);
