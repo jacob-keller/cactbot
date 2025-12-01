@@ -283,6 +283,7 @@ hideall "--sync--"
 #
 # IGNORED ABILITIES
 # A160 Probably an auto attack
+# A15C Unsure, but superfluous to timeline
 #
 # TODO
 # * Figure out which timeline entries are superfluous
