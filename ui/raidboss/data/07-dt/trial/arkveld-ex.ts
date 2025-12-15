@@ -197,7 +197,7 @@ const triggerSet: TriggerSet<Data> = {
           return output.first!({ dir: dirStr });
         }
 
-        return output.text!({ dir: dir, num: num });
+        return output.text!({ dir: dirStr, num: num });
       },
       outputStrings: {
         ...Directions.outputStringsCardinalDir,
