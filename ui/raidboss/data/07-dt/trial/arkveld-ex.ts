@@ -76,18 +76,6 @@ const triggerSet: TriggerSet<Data> = {
       },
     },
     {
-      id: 'Arkveld Ex Wyvern Dragonspark / White Flash',
-      type: 'StartsUsing',
-      netRegex: { source: 'Guardian Arkveld', id: 'ABB[23]', capture: false },
-      suppressSeconds: 1,
-      alertText: (_data, _matches, output) => output.text!(),
-      outputStrings: {
-        text: {
-          en: 'Healer Stacks',
-        },
-      },
-    },
-    {
       id: 'Arkveld Ex Wyverns Ouroblade Left',
       type: 'StartsUsing',
       // TODO: make this use heading to choose a cardinal direction
