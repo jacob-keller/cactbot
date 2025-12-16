@@ -24,7 +24,6 @@ export interface Data extends RaidbossData {
 }
 
 // TODO: baits + towers
-// TODO: make Ouroblade non-boss relative by using heading
 
 const triggerSet: TriggerSet<Data> = {
   id: 'TheWindwardWildsExtreme',
@@ -78,26 +77,40 @@ const triggerSet: TriggerSet<Data> = {
     {
       id: 'Arkveld Ex Wyverns Ouroblade Left',
       type: 'StartsUsing',
-      // TODO: make this use heading to choose a cardinal direction
-      netRegex: { source: 'Guardian Arkveld', id: ['AB8B', 'B031'], capture: false },
+      netRegex: { source: 'Guardian Arkveld', id: ['AB8B', 'B031'], capture: true },
       suppressSeconds: 1,
-      alertText: (_data, _matches, output) => output.text!(),
+      alertText: (_data, matches, output) => {
+        const bossDirNum = Directions.hdgTo8DirNum(parseFloat(matches.heading));
+        // Safe area is 90* clockwise of heading
+        const safeDirNum = (bossDirNum + 2) % 8;
+        const safeDir = Directions.outputFrom8DirNum(safeDirNum);
+
+        return output.text!({ dir: output[safeDir]!() });
+      },
       outputStrings: {
+        ...Directions.outputStrings8Dir,
         text: {
-          en: 'Right + Spread',
+          en: '${dir} (Right) + Spread',
         },
       },
     },
     {
       id: 'Arkveld Ex Wyverns Ouroblade Right',
       type: 'StartsUsing',
-      // TODO: make this use heading to choose a cardinal direction
-      netRegex: { source: 'Guardian Arkveld', id: ['AB8D', 'B032'], capture: false },
+      netRegex: { source: 'Guardian Arkveld', id: ['AB8D', 'B032'], capture: true },
       suppressSeconds: 1,
-      alertText: (_data, _matches, output) => output.text!(),
+      alertText: (_data, matches, output) => {
+        const bossDirNum = Directions.hdgTo8DirNum(parseFloat(matches.heading));
+        // Safe area is 270* clockwise of heading (90* ccw)
+        const safeDirNum = (bossDirNum + 6) % 8;
+        const safeDir = Directions.outputFrom8DirNum(safeDirNum);
+
+        return output.text!({ dir: output[safeDir]!() });
+      },
       outputStrings: {
+        ...Directions.outputStrings8Dir,
         text: {
-          en: 'Left + Spread',
+          en: '${dir} (Left) + Spread',
         },
       },
     },
