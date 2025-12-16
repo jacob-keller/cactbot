@@ -2704,6 +2704,18 @@ const triggerSet: TriggerSet<Data> = {
           deadStarsCenterX,
           deadStarsCenterY,
         );
+        const dir = Directions.outputFrom8DirNum(dirNum);
+
+        // Use popular ABBA/FOE/CAFE Waymark callouts
+        if (dir === 'dirN') {
+          return output.waymarkA!();
+        } else if (dir === 'dirSW') {
+          return output.waymark2and3!();
+        } else if (dir === 'dirSE') {
+          return output.waymarkCandD!();
+        }
+
+        // This shouldn't happen in practice, but its kept for safety.
         return output[Directions.outputFrom8DirNum(dirNum)]!();
       },
       run: (data) => {
@@ -2719,6 +2731,15 @@ const triggerSet: TriggerSet<Data> = {
       },
       outputStrings: {
         ...Directions.outputStrings8Dir,
+        waymarkA: {
+          en: 'A (N)',
+        },
+        waymark2and3: {
+          en: '2/3 (SW)',
+        },
+        waymarkCandD: {
+          en: 'C/D (SE)',
+        },
       },
     },
     {
