@@ -1234,7 +1234,9 @@ const triggerSet: TriggerSet<Data> = {
     {
       id: 'Occult Crescent Advanced Aevis Quarry Lake',
       type: 'StartsUsing',
-      netRegex: { source: 'Advanced Aevis', id: 'A41[23]', capture: false },
+      netRegex: { source: 'Advanced Aevis', id: 'A41[23]', capture: true },
+      durationSeconds: (_data, matches) => parseFloat(matches.castTime),
+      countdownSeconds: (_data, matches) => parseFloat(matches.castTime),
       suppressSeconds: 1,
       response: Responses.lookAway(),
     },
@@ -1337,7 +1339,9 @@ const triggerSet: TriggerSet<Data> = {
       type: 'StartsUsing',
       // TODO: Tune delaySeconds and/or collect multiple incoming tells and
       // generate a combined callout?
-      netRegex: { source: 'Gilded Headstone', id: 'A34[01]', capture: false },
+      netRegex: { source: 'Gilded Headstone', id: 'A34[01]', capture: true },
+      durationSeconds: (_data, matches) => parseFloat(matches.castTime),
+      countdownSeconds: (_data, matches) => parseFloat(matches.castTime),
       response: Responses.lookAway(),
     },
     {
@@ -1345,7 +1349,9 @@ const triggerSet: TriggerSet<Data> = {
       type: 'StartsUsing',
       // TODO: Tune delaySeconds and/or collect multiple incoming tells and
       // generate a combined callout?
-      netRegex: { source: 'Gilded Headstone', id: 'A34[23]', capture: false },
+      netRegex: { source: 'Gilded Headstone', id: 'A34[23]', capture: true },
+      durationSeconds: (_data, matches) => parseFloat(matches.castTime),
+      countdownSeconds: (_data, matches) => parseFloat(matches.castTime),
       response: Responses.lookTowards(),
     },
     {
@@ -1369,7 +1375,9 @@ const triggerSet: TriggerSet<Data> = {
     {
       id: 'Occult Crescent Observer Oogle',
       type: 'StartsUsing',
-      netRegex: { source: 'Observer', id: 'A823', capture: false },
+      netRegex: { source: 'Observer', id: 'A823', capture: true },
+      durationSeconds: (_data, matches) => parseFloat(matches.castTime),
+      countdownSeconds: (_data, matches) => parseFloat(matches.castTime),
       response: Responses.lookAway(),
     },
     {
