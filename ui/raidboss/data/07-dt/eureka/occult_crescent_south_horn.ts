@@ -5496,6 +5496,7 @@ const triggerSet: TriggerSet<Data> = {
       // TODO: Determine close/far autos from boss buff?
       type: 'StartsUsing',
       netRegex: { source: 'Magitaur', id: 'A265', capture: false },
+      durationSeconds: 8,
       alertText: (data, _matches, output) => {
         if (data.role === 'tank')
           return output.nearFarTankCleave!();
