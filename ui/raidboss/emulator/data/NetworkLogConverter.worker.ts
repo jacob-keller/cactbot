@@ -45,10 +45,21 @@ ctx.addEventListener('message', (msg) => {
         const enc = new Encounter(day, zoneId, zoneName, lines);
         enc.initialize();
         if (enc.shouldPersistFight()) {
+          const encName = enc.combatantTracker?.getMainCombatantName();
+          const start = new Date(enc.startTimestamp).toString();
+          const end = new Date(enc.endTimestamp).toString();
+
+          console.debug(`posting new encounter
+Name: ${encName}
+Start: ${start}
+End: ${end}
+Duration: ${enc.duration}
+`);
+
           ctx.postMessage({
             type: 'encounter',
             encounter: enc,
-            name: enc.combatantTracker?.getMainCombatantName(),
+            name: encName,
           });
         }
       },
