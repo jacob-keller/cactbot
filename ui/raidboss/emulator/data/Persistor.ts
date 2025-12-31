@@ -75,6 +75,16 @@ export default class Persistor extends Dexie {
     const id = await this.encounters.add(baseEncounter);
     baseEncounter.id = id;
     summary.id = id;
+
+    const start = new Date(summary.start).toString();
+
+    console.debug(`Added new encounter
+Id: ${id}
+Zone: ${summary.zoneName}
+Name: ${summary.name}
+Start: ${start}
+`);
+
     return this.encounterSummaries.add(summary, id);
   }
 
