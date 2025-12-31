@@ -38,8 +38,8 @@ export default class LogEventHandler extends EventBus {
     if (this.currentFight.length < 2)
       return;
 
-    const start = new Date(this.currentFightStart).toISOString();
-    const end = new Date(this.currentFightEnd).toISOString();
+    const start = new Date(this.currentFightStart).toString();
+    const end = new Date(this.currentFightEnd).toString();
 
     console.debug(`Dispatching new fight
 Start: ${start}
