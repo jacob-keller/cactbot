@@ -529,6 +529,10 @@ const raidEmulatorOnLoad = async () => {
     });
   });
 
+  querySelectorSafe(document, '.refreshDBButton').addEventListener('click', () => {
+    encounterTab.refresh();
+  });
+
   // Make the emulator state available for debugging
   window.raidEmulator = {
     emulator: emulator,

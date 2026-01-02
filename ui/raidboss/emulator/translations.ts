@@ -72,6 +72,9 @@ const emulatorButtons: Translation = {
     cn: '清除数据库',
     tc: '清除資料庫',
   },
+  '.refreshDBButton': {
+    en: 'Refresh DB',
+  },
 } as const;
 
 const emulatorTitle: Translation = {
