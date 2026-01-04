@@ -187,7 +187,11 @@ export default class PopupTextAnalysis extends StubbedPopupText {
 
         resolver.setFinal(() => {
           const currentLine = getCurrentLogLine();
-          resolver.status.finalData = EmulatorCommon.cloneData(this.data, dataPropsToExclude);
+          const finalData = EmulatorCommon.cloneData(this.data, dataPropsToExclude);
+          if (JSON.stringify(finalData) !== JSON.stringify(resolver.status.initialData))
+            resolver.status.finalData = finalData;
+          else
+            delete resolver.status.initialData;
           delete resolver.triggerHelper?.resolver;
           if (this.callback)
             this.callback(currentLine, resolver.triggerHelper, resolver.status, this.data);
@@ -223,7 +227,11 @@ export default class PopupTextAnalysis extends StubbedPopupText {
 
           resolver.setFinal(() => {
             const currentLine = getCurrentLogLine();
-            resolver.status.finalData = EmulatorCommon.cloneData(this.data, dataPropsToExclude);
+            const finalData = EmulatorCommon.cloneData(this.data, dataPropsToExclude);
+            if (JSON.stringify(finalData) !== JSON.stringify(resolver.status.initialData))
+              resolver.status.finalData = finalData;
+            else
+              delete resolver.status.initialData;
             delete resolver.triggerHelper?.resolver;
             if (this.callback)
               this.callback(currentLine, resolver.triggerHelper, resolver.status, this.data);
