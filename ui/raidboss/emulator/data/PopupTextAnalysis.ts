@@ -34,6 +34,9 @@ type EmulatorTriggerHelper = TriggerHelper & {
 const dataPropsToExcludeMap: { [key in keyof RaidbossData]: boolean } = {
   job: true,
   me: true,
+  meId: true,
+  zoneName: true,
+  zoneId: true,
   role: true,
   party: true,
   lang: true,
@@ -43,6 +46,7 @@ const dataPropsToExcludeMap: { [key in keyof RaidbossData]: boolean } = {
   options: true,
   inCombat: true,
   triggerSetConfig: true,
+  timeline: true,
   ShortName: true,
   StopCombat: true,
   ParseLocaleFloat: true,
