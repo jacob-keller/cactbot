@@ -366,7 +366,7 @@ const triggerSet: TriggerSet<Data> = {
           '전략 없음: 자신에게 걸린 선과 선 가져가기만 알림': 'none',
         },
       },
-      default: 'none',
+      default: 'banana',
     },
     {
       id: 'replication4Strategy',
@@ -406,7 +406,7 @@ const triggerSet: TriggerSet<Data> = {
           '전략 없음: 자신에게 걸린 선과 선 가져가기만 알림': 'none',
         },
       },
-      default: 'none',
+      default: 'dn',
     },
     {
       id: 'portentStrategy',
@@ -446,7 +446,7 @@ const triggerSet: TriggerSet<Data> = {
           '전략 없음: 속성과 디버프만 알림': 'none',
         },
       },
-      default: 'none',
+      default: 'dn',
     },
   ],
   timelineFile: 'r12s.txt',
