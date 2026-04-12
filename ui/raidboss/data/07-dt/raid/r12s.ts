@@ -26,7 +26,7 @@ export interface Data extends RaidbossData {
     curtainCallStrat: 'ns' | 'none';
     uptimeKnockbackStrat: true | false;
     portentStrategy: 'dn' | 'zenith' | 'nukemaru' | 'none';
-    replication2Strategy: 'dn' | 'banana' | 'nukemaru' | 'none';
+    replication2Strategy: 'dn' | 'banana' | 'banana-relative' | 'nukemaru' | 'none';
     replication4Strategy: 'dn' | 'em' | 'caro' | 'nukemaru' | 'none';
   };
   phase: Phase;
@@ -68,7 +68,7 @@ export interface Data extends RaidbossData {
   replication2BossId?: string;
   replication2PlayerOrder: string[];
   replication2AbilityOrder: string[];
-  replication2StrategyDetected?: 'dn' | 'banana' | 'nukemaru' | 'unknown';
+  replication2StrategyDetected?: 'dn' | 'banana' | 'banana-relative' | 'nukemaru' | 'unknown';
   netherwrathFollowup: boolean;
   myMutation?: 'alpha' | 'beta';
   manaSpheres: {
@@ -364,6 +364,8 @@ const triggerSet: TriggerSet<Data> = {
             'dn',
           'Banana Codex Strategy: Boss West, Stacks NW/SW, Cones N/S, Defamations NE/SE, Nothing E':
             'banana',
+          'Banana Codex Relative Strategy: Same as Banana Codex, but use relative callouts for mechanics':
+            'banana-relative',
           'Nukemaru Strategy: Boss East, Stacks NE/SE, Cones N/S, Defamations NW/SW, Nothing W':
             'nukemaru',
           'No strategy: Calls the tether you may have and to get a tether.': 'none',
@@ -390,7 +392,7 @@ const triggerSet: TriggerSet<Data> = {
           '전략 없음: 자신에게 걸린 선과 선 가져가기만 알림': 'none',
         },
       },
-      default: 'banana',
+      default: 'banana-relative',
     },
     {
       id: 'replication4Strategy',
@@ -3356,7 +3358,10 @@ const triggerSet: TriggerSet<Data> = {
         if (actor === undefined)
           return output.cloneTether!();
 
-        const dirNum = Directions.xyTo8DirNum(actor.x, actor.y, center.x, center.y);
+        let dirNum = Directions.xyTo8DirNum(actor.x, actor.y, center.x, center.y);
+        // Handle relative callout if configured
+        if (data.triggerSetConfig.replication2Strategy === 'banana-relative')
+          dirNum = (dirNum + 2) % 8;
         const dir = Directions.output8Dir[dirNum] ?? 'unknown';
         return output.cloneTetherDir!({ dir: output[dir]!() });
       },
@@ -3440,7 +3445,7 @@ const triggerSet: TriggerSet<Data> = {
               return output.getTetherNClone!({
                 tether: strat === 'dn'
                   ? output.getBossTether!()
-                  : strat === 'banana'
+                  : strat === 'banana' || strat === 'banana-relative'
                   ? output.getConeTetherCW!()
                   : strat === 'nukemaru'
                   ? output.getConeTetherCCW!()
@@ -3450,7 +3455,7 @@ const triggerSet: TriggerSet<Data> = {
               return output.getTetherNEClone!({
                 tether: strat === 'dn'
                   ? output.getConeTetherCW!()
-                  : strat === 'banana'
+                  : strat === 'banana' || strat === 'banana-relative'
                   ? output.getDefamationTetherCW!()
                   : strat === 'nukemaru'
                   ? output.getStackTetherCCW!()
@@ -3460,7 +3465,7 @@ const triggerSet: TriggerSet<Data> = {
               return output.getTetherEClone!({
                 tether: strat === 'dn'
                   ? output.getStackTetherCW!()
-                  : strat === 'banana'
+                  : strat === 'banana' || strat === 'banana-relative'
                   ? output.getNoTether!()
                   : strat === 'nukemaru'
                   ? output.getBossTether!()
@@ -3470,7 +3475,7 @@ const triggerSet: TriggerSet<Data> = {
               return output.getTetherSEClone!({
                 tether: strat === 'dn'
                   ? output.getDefamationTetherCW!()
-                  : strat === 'banana'
+                  : strat === 'banana' || strat === 'banana-relative'
                   ? output.getDefamationTetherCCW!()
                   : strat === 'nukemaru'
                   ? output.getStackTetherCW!()
@@ -3480,7 +3485,7 @@ const triggerSet: TriggerSet<Data> = {
               return output.getTetherSClone!({
                 tether: strat === 'dn'
                   ? output.getNoTether!()
-                  : strat === 'banana'
+                  : strat === 'banana' || strat === 'banana-relative'
                   ? output.getConeTetherCCW!()
                   : strat === 'nukemaru'
                   ? output.getConeTetherCW!()
@@ -3490,7 +3495,7 @@ const triggerSet: TriggerSet<Data> = {
               return output.getTetherSWClone!({
                 tether: strat === 'dn'
                   ? output.getDefamationTetherCCW!()
-                  : strat === 'banana'
+                  : strat === 'banana' || strat === 'banana-relative'
                   ? output.getStackTetherCCW!()
                   : strat === 'nukemaru'
                   ? output.getDefamationTetherCW!()
@@ -3500,7 +3505,7 @@ const triggerSet: TriggerSet<Data> = {
               return output.getTetherWClone!({
                 tether: strat === 'dn'
                   ? output.getStackTetherCCW!()
-                  : strat === 'banana'
+                  : strat === 'banana' || strat === 'banana-relative'
                   ? output.getBossTether!()
                   : strat === 'nukemaru'
                   ? output.getNoTether!()
@@ -3510,7 +3515,7 @@ const triggerSet: TriggerSet<Data> = {
               return output.getTetherNWClone!({
                 tether: strat === 'dn'
                   ? output.getConeTetherCCW!()
-                  : strat === 'banana'
+                  : strat === 'banana' || strat === 'banana-relative'
                   ? output.getStackTetherCW!()
                   : strat === 'nukemaru'
                   ? output.getDefamationTetherCCW!()
@@ -3636,7 +3641,17 @@ const triggerSet: TriggerSet<Data> = {
             return 'unknown';
           };
 
-          data.replication2StrategyDetected = detectStrategy(data.replication2AbilityOrder);
+          const detectedStrat = detectStrategy(data.replication2AbilityOrder);
+
+          // Only use relative callouts if user configured the relative
+          // strategy option.
+          if (
+            detectedStrat === 'banana' &&
+            data.triggerSetConfig.replication2Strategy === 'banana-relative'
+          )
+            data.replication2StrategyDetected = 'banana-relative';
+          else
+            data.replication2StrategyDetected = detectedStrat;
         }
       },
     },
@@ -3664,6 +3679,8 @@ const triggerSet: TriggerSet<Data> = {
               ? output.baitJumpDNN!({ strat: output.north!() })
               : strat === 'banana'
               ? output.baitJumpBananaW!({ strat: output.west!() })
+              : strat === 'banana-relative'
+              ? output.baitJumpBananaW!({ strat: output.north!() })
               : strat === 'nukemaru'
               ? output.baitJumpNukemaruE!({ strat: output.east!() })
               : output.baitJump!(),
@@ -3687,6 +3704,10 @@ const triggerSet: TriggerSet<Data> = {
                       ? output.baitProteanBananaN!({
                         strat: output['dirWSW']!(),
                       }) // Southmost protean
+                      : strat === 'banana-relative'
+                      ? output.baitProteanBananaN!({
+                        strat: output['dirNNW']!(),
+                      }) // Relative westmost protean
                       : strat === 'nukemaru'
                       ? output.baitProteanNukemaruN!({
                         strat: output['dirENE']!(),
@@ -3705,6 +3726,10 @@ const triggerSet: TriggerSet<Data> = {
                       ? output.baitProteanBananaS!({
                         strat: output['dirWNW']!(),
                       }) // Northmost protean
+                      : strat === 'banana-relative'
+                      ? output.baitProteanBananaS!({
+                        strat: output['dirNNE']!(),
+                      }) // Relative Eastmost protean
                       : strat === 'nukemaru'
                       ? output.baitProteanNukemaruN!({
                         strat: output['dirESE']!(),
@@ -3723,6 +3748,8 @@ const triggerSet: TriggerSet<Data> = {
                   ? output.baitProteanDN!({ strat: output.north!() })
                   : strat === 'banana'
                   ? output.baitProteanBanana!({ strat: output.west!() })
+                  : strat === 'banana-relative'
+                  ? output.baitProteanBanana!({ strat: output.north!() })
                   : strat === 'nukemaru'
                   ? output.baitProteanNukemaru!({ strat: output.east!() })
                   : output.baitProtean!(),
@@ -3735,6 +3762,10 @@ const triggerSet: TriggerSet<Data> = {
                       ? output.defamationOnYouBananaNE!({
                         strat: output['dirNNE']!(),
                       }) // North/NNE
+                      : strat === 'banana-relative'
+                      ? output.defamationOnYouBananaNE!({
+                        strat: output['dirESE']!(),
+                      }) // Relative East/ESE
                       : output.defamationOnYou!(),
                   });
                 case 3: // DN and Banana
@@ -3747,6 +3778,10 @@ const triggerSet: TriggerSet<Data> = {
                       ? output.defamationOnYouBananaSE!({
                         strat: output['dirSSE']!(),
                       }) // South/SSE
+                      : strat === 'banana-relative'
+                      ? output.defamationOnYouBananaSE!({
+                        strat: output['dirWSW']!(),
+                      }) // Relative West/WSW
                       : output.defamationOnYou!(),
                   });
                 case 5: // DN and Nukemaru
@@ -3798,7 +3833,13 @@ const triggerSet: TriggerSet<Data> = {
                 case 5: // Banana Only
                   return output.heavySlamTether!({
                     mech1: strat === 'banana'
-                      ? output.baitProteanBananaSW!({ strat: output.west!() }) // Inner WSW
+                      ? output.baitProteanBananaSW!({
+                        strat: output.west!(),
+                      }) // Inner WSW
+                      : strat === 'banana-relative'
+                      ? output.baitProteanBananaSW!({
+                        strat: output.north!(),
+                      }) // Relative Inner NNW
                       : output.baitProtean!(),
                   });
                 case 6: // DN Only
@@ -3812,7 +3853,13 @@ const triggerSet: TriggerSet<Data> = {
                 case 7: // Banana Only
                   return output.heavySlamTether!({
                     mech1: strat === 'banana'
-                      ? output.baitProteanBananaNW!({ strat: output.west!() }) // Inner WNW
+                      ? output.baitProteanBananaNW!({
+                        strat: output.west!(),
+                      }) // Inner WNW
+                      : strat === 'banana-relative'
+                      ? output.baitProteanBananaNW!({
+                        strat: output.north!(),
+                      }) // Relative Inner NNE
                       : output.baitProtean!(),
                   });
               }
@@ -3821,6 +3868,8 @@ const triggerSet: TriggerSet<Data> = {
                   ? output.baitProteanDN!({ strat: output.north!() })
                   : strat === 'banana'
                   ? output.baitProteanBanana!({ strat: output.west!() })
+                  : strat === 'banana-relative'
+                  ? output.baitProteanBanana!({ strat: output.north!() })
                   : output.baitProtean!(),
               });
           }
@@ -3845,6 +3894,10 @@ const triggerSet: TriggerSet<Data> = {
                     ? output.baitProteanBananaN!({
                       strat: output['dirWSW']!(),
                     }) // Southmost protean
+                    : strat === 'banana-relative'
+                    ? output.baitProteanBananaN!({
+                      strat: output['dirNNW']!(),
+                    }) // Relative Westmost protean
                     : strat === 'nukemaru'
                     ? output.baitProteanNukemaruN!({
                       strat: output['dirENE']!(),
@@ -3865,6 +3918,10 @@ const triggerSet: TriggerSet<Data> = {
                     ? output.baitProteanBananaS!({
                       strat: output['dirWNW']!(),
                     }) // Northmost protean
+                    : strat === 'banana-relative'
+                    ? output.baitProteanBananaN!({
+                      strat: output['dirNNE']!(),
+                    }) // Relative Eastmost protean
                     : strat === 'nukemaru'
                     ? output.baitProteanNukemaruS!({
                       strat: output['dirESE']!(),
@@ -3885,6 +3942,8 @@ const triggerSet: TriggerSet<Data> = {
                 ? output.baitProteanDN!({ strat: output.north!() })
                 : strat === 'banana'
                 ? output.baitProteanBanana!({ strat: output.west!() })
+                : strat === 'banana-relative'
+                ? output.baitProteanBanana!({ strat: output.north!() })
                 : strat === 'nukemaru'
                 ? output.baitProteanNukemaru!({ strat: output.east!() })
                 : output.baitProtean!(),
@@ -3898,6 +3957,10 @@ const triggerSet: TriggerSet<Data> = {
                     ? output.defamationOnYouBananaNE!({
                       strat: output['dirNNE']!(),
                     }) // North/NNE
+                    : strat === 'banana-relative'
+                    ? output.defamationOnYouBananaNE!({
+                      strat: output['dirESE']!(),
+                    }) // Relative East/ESE
                     : output.defamationOnYou!(),
                 });
               case 3: // DN and Banana
@@ -3911,6 +3974,10 @@ const triggerSet: TriggerSet<Data> = {
                     ? output.defamationOnYouBananaSE!({
                       strat: output['dirSSE']!(),
                     }) // South/SSE
+                    : strat === 'banana-relative'
+                    ? output.defamationOnYouBananaSE!({
+                      strat: output['dirWSW']!(),
+                    }) // Relative West/WSW
                     : output.defamationOnYou!(),
                 });
               case 5: // DN and Nukemaru
@@ -3969,7 +4036,13 @@ const triggerSet: TriggerSet<Data> = {
                 return output.heavySlamTetherDir!({
                   dir: output[dir]!(),
                   mech1: strat === 'banana'
-                    ? output.baitProteanBananaSW!({ strat: output.west!() }) // Inner WSW
+                    ? output.baitProteanBananaSW!({
+                      strat: output.west!(),
+                    }) // Inner WSW
+                    : strat === 'banana-relative'
+                    ? output.baitProteanBananaSW!({
+                      strat: output.north!(),
+                    }) // Relative Inner NNW
                     : output.baitProtean!(),
                 });
               case 6: // DN Only
@@ -3985,7 +4058,13 @@ const triggerSet: TriggerSet<Data> = {
                 return output.heavySlamTetherDir!({
                   dir: output[dir]!(),
                   mech1: strat === 'banana'
-                    ? output.baitProteanBananaNW!({ strat: output.west!() }) // Inner WNW
+                    ? output.baitProteanBananaNW!({
+                      strat: output.west!(),
+                    }) // Inner WNW
+                    : strat === 'banana-relative'
+                    ? output.baitProteanBananaNW!({
+                      strat: output.north!(),
+                    }) // Relative Inner NNE
                     : output.baitProtean!(),
                 });
             }
@@ -3995,6 +4074,8 @@ const triggerSet: TriggerSet<Data> = {
                 ? output.baitProteanDN!({ strat: output.north!() })
                 : strat === 'banana'
                 ? output.baitProteanBanana!({ strat: output.west!() })
+                : strat === 'banana-relative'
+                ? output.baitProteanBanana!({ strat: output.north!() })
                 : strat === 'nukemaru'
                 ? output.baitProteanBanana!({ strat: output.east!() })
                 : output.baitProtean!(),
@@ -4260,6 +4341,8 @@ const triggerSet: TriggerSet<Data> = {
             ? output.baitFarDefamationDN!({ strat: output.south!() })
             : strat === 'banana'
             ? output.baitFarDefamationBanana!({ strat: output.east!() })
+            : strat === 'banana-relative'
+            ? output.baitFarDefamationBanana!({ strat: output.south!() })
             : strat === 'nukemaru'
             ? output.baitFarDefamationNukemaru!({ strat: output.west!() })
             : output.baitFarDefamation!(),
@@ -4543,7 +4626,7 @@ const triggerSet: TriggerSet<Data> = {
         }
 
         // Banana Codex and Nukemaru Strategies
-        if (strat === 'banana' || strat === 'nukemaru') {
+        if (strat === 'banana' || strat === 'banana-relative' || strat === 'nukemaru') {
           // Technically, these strategies do not care about Near/Far, but
           // included as informational
           switch (ability) {
@@ -4557,6 +4640,8 @@ const triggerSet: TriggerSet<Data> = {
               return output.manaBurstTetherHitbox!({
                 mech1: strat === 'banana'
                   ? output.hitboxBanana!()
+                  : strat === 'banana-relative'
+                  ? output.hitboxBananaRelative!()
                   : output.hitboxNukemaru!(),
                 spiteBaits: isNear ? output.near!() : output.far!(),
                 mech2: output.stackDir!({
@@ -4575,6 +4660,8 @@ const triggerSet: TriggerSet<Data> = {
               return output.fireballSplashTetherHitbox!({
                 mech1: strat === 'banana'
                   ? output.hitboxBanana!()
+                  : strat === 'banana-relative'
+                  ? output.hitboxBananaRelative!()
                   : output.hitboxNukemaru!(),
                 spiteBaits: isNear ? output.near!() : output.far!(),
                 mech2: output.stackDir!({
@@ -4587,6 +4674,8 @@ const triggerSet: TriggerSet<Data> = {
           return output.noTetherHitbox!({
             mech1: strat === 'banana'
               ? output.hitboxBanana!()
+              : strat === 'banana-relative'
+              ? output.hitboxBananaRelative!()
               : output.hitboxNukemaru!(),
             spiteBaits: isNear ? output.near!() : output.far!(),
             mech2: output.stackDir!({
@@ -4669,6 +4758,9 @@ const triggerSet: TriggerSet<Data> = {
           fr: 'Placez-vous à l\'Ouest sur la hitbox du boss',
           cn: '去左边, Boss判定圈上',
           ko: '보스 히트박스 서쪽에 있기',
+        },
+        hitboxBananaRelative: {
+          en: 'Be North on Boss Hitbox',
         },
         hitboxNukemaru: {
           en: 'Be West on Boss Hitbox',
