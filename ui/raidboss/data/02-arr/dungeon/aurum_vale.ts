@@ -10,7 +10,11 @@ const triggerSet: TriggerSet<Data> = {
   zoneId: ZoneId.TheAurumVale,
   comments: {
     en: 'pre-7.4 rework',
+    de: 'Vor der 7.4 Überarbeitung',
+    fr: 'Avant le remaniement 7.4',
     cn: '7.4改版前',
+    ko: '7.4 개편 전',
+    tc: '7.4改版前',
   },
   triggers: [
     {
